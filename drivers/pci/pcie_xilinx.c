@@ -186,6 +186,31 @@ static int pci_xilinx_probe(struct udevice *dev)
 	return 0;
 }
 
+static int pcie_xilinx_probe(struct udevice *dev)
+{
+        struct xilinx_pcie *pcie = dev_get_priv(dev);
+        u32 bridge_info, ecam_sz, rpsc;
+
+        /* Disable all interrupts */
+        writel(0, pcie->cfg_base + XILINX_PCIE_REG_INT_MASK);
+
+        /* Enable the bridge */
+        rpsc = readl(pcie->cfg_base + XILINX_PCIE_REG_RPSC);
+        rpsc |= XILINX_PCIE_REG_RPSC_BRIDGEEN;
+        writel(rpsc, pcie->cfg_base + XILINX_PCIE_REG_RPSC);
+
+        /* Discover the size of the ECAM region */
+        bridge_info = readl(pcie->cfg_base + XILINX_PCIE_REG_BRIDGE_INFO);
+        ecam_sz = bridge_info & XILINX_PCIE_REG_BRIDGE_INFO_ECAMSZ_MASK;
+        ecam_sz >>= XILINX_PCIE_REG_BRIDGE_INFO_ECAMSZ_SHIFT;
+
+        /* Enable access to all possible subordinate buses */
+        writel((0 << 0) | (1 << 8) | (GENMASK(ecam_sz - 1, 0) << 16),
+               pcie->cfg_base + PCI_PRIMARY_BUS);
+
+        return 0;
+}
+
 static const struct dm_pci_ops pcie_xilinx_ops = {
 	.read_config	= pcie_xilinx_read_config,
 	.write_config	= pcie_xilinx_write_config,

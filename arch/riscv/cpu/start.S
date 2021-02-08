@@ -32,6 +32,34 @@
 #define SYM_SIZE		0x18
 #endif
 
+#define PMP_R			0x01
+#define PMP_W			0x02
+#define PMP_X			0x04
+#define PMP_TOR			0x8
+#define PMP_NA4			0x10
+#define PMP_NAPOT		0x18
+
+#define CM_BASE			0x16100000
+#define GIC_BASE		0x16120000
+#define CPC_BASE		0x16200000
+#define GCR_CL_COH_EN		0x2008
+#define GCR_CL_COH_EN_EN	(0x1 << 0)
+#define GCR_BASE_OFFSET		0x0008
+#define GIC_BASE_OFFSET		0x0080
+#define CPC_BASE_OFFSET		0x0088
+#define ENABLE			0x1
+#define INDEXED(op, reg, idx, offset, base) \
+	li	idx, offset	;\
+	add	idx, idx, base	;\
+	op	reg, (idx)
+
+#define BOSTON_PLAT_BASE	0x17ffd000
+#define BOSTON_PLAT_DDR3STAT	(BOSTON_PLAT_BASE + 0x14)
+#define BOSTON_PLAT_DDR3STAT_CALIB	(1 << 2)
+#define BOSTON_PLAT_NOCPCIE0ADDR        (BOSTON_PLAT_BASE + 0x3c)
+#define BOSTON_PLAT_NOCPCIE1ADDR        (BOSTON_PLAT_BASE + 0x40)
+#define BOSTON_PLAT_NOCPCIE2ADDR        (BOSTON_PLAT_BASE + 0x44)
+
 .section .data
 secondary_harts_relocation_error:
 	.ascii "Relocation of secondary harts has failed, error %d\n"
@@ -39,6 +67,76 @@ secondary_harts_relocation_error:
 .section .text
 .globl _start
 _start:
+	li	x1,0
+	li	x2,0
+	li	x3,0
+	li	x4,0
+	li	x5,0
+	li	x6,0
+	li	x7,0
+	li	x8,0
+	li	x9,0
+	li	x10,0
+	li	x11,0
+	li	x12,0
+	li	x13,0
+	li	x14,0
+	li	x15,0
+	li	x16,0
+	li	x17,0
+	li	x18,0
+	li	x19,0
+	li	x20,0
+	li	x21,0
+	li	x22,0
+	li	x23,0
+	li	x24,0
+	li	x25,0
+	li	x26,0
+	li	x27,0
+	li	x28,0
+	li	x29,0
+	li	x30,0
+	li	x31,0
+
+	li	t0, BOSTON_PLAT_DDR3STAT
+1:	lw	t1, 0(t0)
+	andi	t1, t1, BOSTON_PLAT_DDR3STAT_CALIB
+	beqz	t1, 1b
+
+	li	s0, CM_BASE
+	li	t0, 0x1fbf8000
+
+	li	t1, CM_BASE
+	sd	t1, GCR_BASE_OFFSET(t0)
+
+	li	t0, GCR_CL_COH_EN_EN
+	INDEXED(sd, t0, t1, GCR_CL_COH_EN, s0)
+
+	li	t0, GIC_BASE + ENABLE
+	INDEXED(sd, t0, t1, GIC_BASE_OFFSET, s0)
+
+	li	t0, CPC_BASE + ENABLE
+	INDEXED(sd, t0, t1, CPC_BASE_OFFSET, s0)
+
+	/* Map all PCIe DMA access to its default, non-IOCU, target */
+	li	t0,BOSTON_PLAT_NOCPCIE0ADDR
+	sw	zero, 0(t0)
+	li	t0,BOSTON_PLAT_NOCPCIE1ADDR
+	sw	zero, 0(t0)
+	li	t0,BOSTON_PLAT_NOCPCIE2ADDR
+	sw	zero, 0(t0)
+
+	/* Setup PMP */
+	li	t0, 0x2fffffff # 2G from 0x80000000
+	csrw	pmpaddr0, t0
+	li	t0, PMP_NAPOT | PMP_R | PMP_W | PMP_X
+	csrw	pmpcfg0, t0
+	/* Set up PMP Uncacheable */
+	li	t0, 2
+	csrw	pmacfg0, t0
+	fence
+
 #if CONFIG_IS_ENABLED(RISCV_MMODE)
 	csrr	a0, CSR_MHARTID
 #endif
@@ -463,3 +561,15 @@ secondary_hart_loop:
 #endif
 
 	j	secondary_hart_loop
+
+	.globl My_Delay_Loop
+My_Delay_Loop:
+	li	t0, 0x1fc00000
+	sd	zero, 0(t0)
+	li	t0, 20000000
+1:	addi	t0, t0, -1
+	bne	t0, zero, 1b
+	li	a0, 0
+	jr	ra
+	nop
+	nop

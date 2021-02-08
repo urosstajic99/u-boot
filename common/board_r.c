@@ -598,6 +598,21 @@ static int run_main_loop(void)
 	return 0;
 }
 
+void My_Delay_Loop();
+static int my_test()
+{
+	int i;
+	int num_of_insn = 8;
+	int *start = (int *)My_Delay_Loop;
+	int *addr = 0x80000000;
+	for (i = 0; i < num_of_insn; i++, addr++, start++) {
+		*addr = *start;
+	}
+        invalidate_icache_all();
+
+	return 0;
+}
+
 /*
  * Over time we hope to remove most of the driver-related init and do it
  * if/when the driver is later used.
@@ -611,6 +626,7 @@ static void initcall_run_r(void)
 	 * Please do not add logic to this function (variables, if (), etc.).
 	 * For simplicity it should remain an ordered list of function calls.
 	 */
+	INITCALL(my_test);
 	INITCALL(initr_trace);
 	INITCALL(initr_reloc);
 	INITCALL(event_init);

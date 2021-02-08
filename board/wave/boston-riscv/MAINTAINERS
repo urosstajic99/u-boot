@@ -1,0 +1,6 @@
+BOSTON-RISCV BOARD
+M:	Chao-ying Fu <cfu@wavecomp.com>
+S:	Maintained
+F:	board/wave/boston-riscv/
+F:	include/configs/boston-riscv.h
+F:	configs/boston-riscv_defconfig

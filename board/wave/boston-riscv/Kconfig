@@ -1,0 +1,23 @@
+if TARGET_WAVE_BOSTON
+
+config SYS_BOARD
+	default "boston-riscv"
+
+config SYS_VENDOR
+	default "wave"
+
+config SYS_CONFIG_NAME
+	default "boston-riscv"
+
+config SYS_CPU
+	default "shogun"
+
+config SYS_TEXT_BASE
+	default 0x1fc00000
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select SHOGUN_RISCV
+	imply SYS_NS16550
+
+endif
