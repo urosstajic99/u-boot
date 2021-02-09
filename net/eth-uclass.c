@@ -463,6 +463,8 @@ int eth_rx(void)
 			break;
 		if (!eth_is_active(current))
 			break;
+		if (net_state == NETLOOP_FAIL)
+			break;
 	}
 	if (ret == -EAGAIN)
 		ret = 0;

@@ -48,6 +48,7 @@
 #define GIC_BASE_OFFSET		0x0080
 #define CPC_BASE_OFFSET		0x0088
 #define ENABLE			0x1
+#define COUNT_STOP		(0x1 << 28)
 #define INDEXED(op, reg, idx, offset, base) \
 	li	idx, offset	;\
 	add	idx, idx, base	;\
@@ -118,6 +119,13 @@ _start:
 
 	li	t0, CPC_BASE + ENABLE
 	INDEXED(sd, t0, t1, CPC_BASE_OFFSET, s0)
+
+	/* Clear bit 28 at GIC_Base to enable counter */
+	li	t0, GIC_BASE
+	ld	t1, 0(t0)
+	li	t2, COUNT_STOP
+	xor	t1, t1, t2
+	sd	t1, 0(t0)
 
 	/* Map all PCIe DMA access to its default, non-IOCU, target */
 	li	t0,BOSTON_PLAT_NOCPCIE0ADDR
