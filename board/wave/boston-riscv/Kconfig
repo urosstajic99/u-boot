@@ -20,4 +20,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SHOGUN_RISCV
 	imply SYS_NS16550
 
+config SYS_CACHELINE_SIZE
+	default 64
+
 endif
