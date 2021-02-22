@@ -73,7 +73,8 @@ void flush_dcache_range(unsigned long start, unsigned long end)
 	if (lsize == 0)
 		probe_cache_config();
 
-	if (start == end)
+	/* aend will be miscalculated when size is zero, so we return here */
+	if (start >= end)
 		return;
 
 	cache_loop(start, end, lsize, HIT_WRITEBACK_INV_D);
@@ -91,14 +92,15 @@ void invalidate_dcache_range(unsigned long start, unsigned long end)
 	if (lsize == 0)
 		probe_cache_config();
 
-	if (start == end)
+	/* aend will be miscalculated when size is zero, so we return here */
+	if (start >= end)
 		return;
-
-	cache_loop(start, end, lsize, HIT_INVALIDATE_D);
 
 	/* invalidate L2 cache */
 	if (slsize)
 		cache_loop(start, end, slsize, HIT_INVALIDATE_SD);
+
+	cache_loop(start, end, lsize, HIT_INVALIDATE_D);
 
 	/* ensure cache ops complete before any further memory access */
 	asm volatile ("ihb");
