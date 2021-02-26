@@ -174,6 +174,7 @@ static const struct fdt_reserve_entry *fdt_mem_rsv(const void *fdt, int n)
 
 int fdt_get_mem_rsv(const void *fdt, int n, uint64_t *address, uint64_t *size)
 {
+	uint64_t u64;
 	const struct fdt_reserve_entry *re;
 
 	FDT_RO_PROBE(fdt);
@@ -181,8 +182,10 @@ int fdt_get_mem_rsv(const void *fdt, int n, uint64_t *address, uint64_t *size)
 	if (fdt_chk_extra() && !re)
 		return -FDT_ERR_BADOFFSET;
 
-	*address = fdt64_to_cpu(re->address);
-	*size = fdt64_to_cpu(re->size);
+	memcpy(&u64, &re->address, sizeof(u64));
+	*address = fdt64_to_cpu(u64);
+	memcpy(&u64, &re->size, sizeof(u64));
+	*size = fdt64_to_cpu(u64);
 	return 0;
 }
 
@@ -190,9 +193,11 @@ int fdt_num_mem_rsv(const void *fdt)
 {
 	int i;
 	const struct fdt_reserve_entry *re;
+	uint64_t u64;
 
 	for (i = 0; (re = fdt_mem_rsv(fdt, i)) != NULL; i++) {
-		if (fdt64_to_cpu(re->size) == 0)
+		memcpy(&u64, &re->size, sizeof(u64));
+		if (fdt64_to_cpu(u64) == 0)
 			return i;
 	}
 	return -FDT_ERR_TRUNCATED;
