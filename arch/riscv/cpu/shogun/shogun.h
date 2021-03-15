@@ -6,8 +6,11 @@
 #ifndef __SHOGUN_H__
 #define __SHOGUN_H__
 
-#define CCA_CACHE_ENABLE	16
+#define CCA_CACHE_ENABLE	0
+#define CCA_BUFFER_CACHE	1
 #define CCA_CACHE_DISABLE	2
+#define CCA_UNCACHE_ACC		3
+#define PMA_SPECULATION		(1 << 3)
 
 #define L1_I_CACHE      0
 #define L1_D_CACHE      1
