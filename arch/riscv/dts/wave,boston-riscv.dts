@@ -18,7 +18,7 @@
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-		timebase-frequency = <25000000>;
+		timebase-frequency = <20000000>;
 
 		cpu@0 {
 			device_type = "cpu";
@@ -28,7 +28,7 @@
 			status = "okay";
 			reg = <0>;
 			clocks = <&clk_boston BOSTON_CLK_CPU>;
-			clock-frequency = <25000000>;
+			clock-frequency = <20000000>;
 			u-boot,dm-pre-reloc;
 		};
 	};
@@ -212,6 +212,7 @@
 		interrupts = <GIC_SHARED 3 IRQ_TYPE_LEVEL_HIGH>;
 
 		clocks = <&clk_boston BOSTON_CLK_SYS>;
+		clock-frequency = <20000000>;
 
 		u-boot,dm-pre-reloc;
 	};
