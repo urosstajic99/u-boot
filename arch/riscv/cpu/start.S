@@ -124,7 +124,8 @@ _start:
 	li	t0, GIC_BASE
 	ld	t1, 0(t0)
 	li	t2, COUNT_STOP
-	xor	t1, t1, t2
+	not	t2, t2
+	and	t1, t1, t2
 	sd	t1, 0(t0)
 
 	/* Map all PCIe DMA access to its default, non-IOCU, target */
