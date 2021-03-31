@@ -20,6 +20,25 @@
 #include <asm/encoding.h>
 #include <semihosting.h>
 
+ulong atomic_swap_w(ulong, ulong);
+ulong atomic_swap_d(ulong, ulong);
+ulong atomic_add_w(ulong, ulong);
+ulong atomic_add_d(ulong, ulong);
+ulong atomic_and_w(ulong, ulong);
+ulong atomic_and_d(ulong, ulong);
+ulong atomic_or_w(ulong, ulong);
+ulong atomic_or_d(ulong, ulong);
+ulong atomic_xor_w(ulong, ulong);
+ulong atomic_xor_d(ulong, ulong);
+ulong atomic_max_w(ulong, ulong);
+ulong atomic_max_d(ulong, ulong);
+ulong atomic_maxu_w(ulong, ulong);
+ulong atomic_maxu_d(ulong, ulong);
+ulong atomic_min_w(ulong, ulong);
+ulong atomic_min_d(ulong, ulong);
+ulong atomic_minu_w(ulong, ulong);
+ulong atomic_minu_d(ulong, ulong);
+
 #define ILLEGAL_INSTRUCTION 2
 #define AMO_MASK 0xf800707f
 #define AQRL_MASK 0x06000000
@@ -145,6 +164,7 @@ static void show_code(ulong epc)
 		printf("%04x%s", pos[i], i + 1 == len ? ")\n" : " ");
 }
 
+#if 0
 static char *reg_names[32] =
 {
 	"zero",
@@ -180,8 +200,9 @@ static char *reg_names[32] =
 	"t5",
 	"t6"
 };
+#endif
 
-static long get_reg(struct pt_regs *regs, int reg_num)
+static ulong get_reg(struct pt_regs *regs, int reg_num)
 {
 	switch (reg_num) {
 		case 0:
@@ -255,7 +276,7 @@ static long get_reg(struct pt_regs *regs, int reg_num)
 	return 0;
 }
 
-static void set_reg(struct pt_regs *regs, int reg_num, long reg_value)
+static void set_reg(struct pt_regs *regs, int reg_num, ulong reg_value)
 {
 	switch (reg_num) {
 		case 0:
@@ -385,14 +406,18 @@ static long _exit_trap(ulong code, ulong epc, ulong tval, struct pt_regs *regs)
 		longjmp(gd->arch.resume->jump, 1);
 	}
 	if (code == ILLEGAL_INSTRUCTION) {
-		int opcode = *(int *)epc;
-		int aqrl = (opcode & AQRL_MASK) >> AQRL_SHIFT;
+		// Fetch one 16-bit op at a time to deal with 16-bit alignment.
+		// FIXME! For the big-endian mode, we need to swap bytes.
+		unsigned short op0 = *(unsigned short *)epc;
+		unsigned short op1 = *((unsigned short *)epc + 1);
+		unsigned int opcode = (op1 << 16) | op0;
+		//int aqrl = (opcode & AQRL_MASK) >> AQRL_SHIFT;
 		int rs2 = (opcode & RS2_MASK) >> RS2_SHIFT;
 		int rs1 = (opcode & RS1_MASK) >> RS1_SHIFT;
 		int rd = (opcode & RD_MASK) >> RD_SHIFT;
-		long rs2_value = get_reg(regs, rs2);
-		long rs1_value = get_reg(regs, rs1);
-		long rd_value = 0;
+		ulong rs2_value = get_reg(regs, rs2);
+		ulong rs1_value = get_reg(regs, rs1);
+		ulong rd_value = 0;
 		switch (opcode & AMO_MASK) {
 		case AMOADD_D_MATCH:
 			rd_value = atomic_add_d(rs1_value, rs2_value);
