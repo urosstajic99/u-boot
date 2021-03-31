@@ -20,6 +20,36 @@
 #include <asm/encoding.h>
 #include <semihosting.h>
 
+#define ILLEGAL_INSTRUCTION 2
+#define AMO_MASK 0xf800707f
+#define AQRL_MASK 0x06000000
+#define AQRL_SHIFT 25
+#define RS2_MASK 0x01f00000
+#define RS2_SHIFT 20
+#define RS1_MASK 0x000f8000
+#define RS1_SHIFT 15
+#define RD_MASK 0x00000f80
+#define RD_SHIFT 7
+
+#define AMOADD_D_MATCH 0x0000302f
+#define AMOADD_W_MATCH 0x0000202f
+#define AMOAND_D_MATCH 0x6000302f
+#define AMOAND_W_MATCH 0x6000202f
+#define AMOMAX_D_MATCH 0xa000302f
+#define AMOMAX_W_MATCH 0xa000202f
+#define AMOMAXU_D_MATCH 0xe000302f
+#define AMOMAXU_W_MATCH 0xe000202f
+#define AMOMIN_D_MATCH 0x8000302f
+#define AMOMIN_W_MATCH 0x8000202f
+#define AMOMINU_D_MATCH 0xc000302f
+#define AMOMINU_W_MATCH 0xc000202f
+#define AMOOR_D_MATCH 0x4000302f
+#define AMOOR_W_MATCH 0x4000202f
+#define AMOSWAP_D_MATCH 0x0800302f
+#define AMOSWAP_W_MATCH 0x0800202f
+#define AMOXOR_D_MATCH 0x2000302f
+#define AMOXOR_W_MATCH 0x2000202f
+
 DECLARE_GLOBAL_DATA_PTR;
 
 void set_resume(struct resume_data *data)
@@ -115,7 +145,221 @@ static void show_code(ulong epc)
 		printf("%04x%s", pos[i], i + 1 == len ? ")\n" : " ");
 }
 
-static void _exit_trap(ulong code, ulong epc, ulong tval, struct pt_regs *regs)
+static char *reg_names[32] =
+{
+	"zero",
+	"ra",
+	"sp",
+	"gp",
+	"tp",
+	"t0",
+	"t1",
+	"t2",
+	"s0",
+	"s1",
+	"a0",
+	"a1",
+	"a2",
+	"a3",
+	"a4",
+	"a5",
+	"a6",
+	"a7",
+	"s2",
+	"s3",
+	"s4",
+	"s5",
+	"s6",
+	"s7",
+	"s8",
+	"s9",
+	"s10",
+	"s11",
+	"t3",
+	"t4",
+	"t5",
+	"t6"
+};
+
+static long get_reg(struct pt_regs *regs, int reg_num)
+{
+	switch (reg_num) {
+		case 0:
+			return 0;
+		case 1:
+			return regs->ra;
+		case 2:
+			return regs->sp;
+		case 3:
+			return regs->gp;
+		case 4:
+			return regs->tp;
+		case 5:
+			return regs->t0;
+		case 6:
+			return regs->t1;
+		case 7:
+			return regs->t2;
+		case 8:
+			return regs->s0;
+		case 9:
+			return regs->s1;
+		case 10:
+			return regs->a0;
+		case 11:
+			return regs->a1;
+		case 12:
+			return regs->a2;
+		case 13:
+			return regs->a3;
+		case 14:
+			return regs->a4;
+		case 15:
+			return regs->a5;
+		case 16:
+			return regs->a6;
+		case 17:
+			return regs->a7;
+		case 18:
+			return regs->s2;
+		case 19:
+			return regs->s3;
+		case 20:
+			return regs->s4;
+		case 21:
+			return regs->s5;
+		case 22:
+			return regs->s6;
+		case 23:
+			return regs->s7;
+		case 24:
+			return regs->s8;
+		case 25:
+			return regs->s9;
+		case 26:
+			return regs->s10;
+		case 27:
+			return regs->s11;
+		case 28:
+			return regs->t3;
+		case 29:
+			return regs->t4;
+		case 30:
+			return regs->t5;
+		case 31:
+			return regs->t6;
+		default:
+			printf("Error reg_num=%d for get_reg\n", reg_num);
+			break;
+	}
+	return 0;
+}
+
+static void set_reg(struct pt_regs *regs, int reg_num, long reg_value)
+{
+	switch (reg_num) {
+		case 0:
+			break;
+		case 1:
+			regs->ra = reg_value;
+			break;
+		case 2:
+			regs->sp = reg_value;
+			break;
+		case 3:
+			regs->gp = reg_value;
+			break;
+		case 4:
+			regs->tp = reg_value;
+			break;
+		case 5:
+			regs->t0 = reg_value;
+			break;
+		case 6:
+			regs->t1 = reg_value;
+			break;
+		case 7:
+			regs->t2 = reg_value;
+			break;
+		case 8:
+			regs->s0 = reg_value;
+			break;
+		case 9:
+			regs->s1 = reg_value;
+			break;
+		case 10:
+			regs->a0 = reg_value;
+			break;
+		case 11:
+			regs->a1 = reg_value;
+			break;
+		case 12:
+			regs->a2 = reg_value;
+			break;
+		case 13:
+			regs->a3 = reg_value;
+			break;
+		case 14:
+			regs->a4 = reg_value;
+			break;
+		case 15:
+			regs->a5 = reg_value;
+			break;
+		case 16:
+			regs->a6 = reg_value;
+			break;
+		case 17:
+			regs->a7 = reg_value;
+			break;
+		case 18:
+			regs->s2 = reg_value;
+			break;
+		case 19:
+			regs->s3 = reg_value;
+			break;
+		case 20:
+			regs->s4 = reg_value;
+			break;
+		case 21:
+			regs->s5 = reg_value;
+			break;
+		case 22:
+			regs->s6 = reg_value;
+			break;
+		case 23:
+			regs->s7 = reg_value;
+			break;
+		case 24:
+			regs->s8 = reg_value;
+			break;
+		case 25:
+			regs->s9 = reg_value;
+			break;
+		case 26:
+			regs->s10 = reg_value;
+			break;
+		case 27:
+			regs->s11 = reg_value;
+			break;
+		case 28:
+			regs->t3 = reg_value;
+			break;
+		case 29:
+			regs->t4 = reg_value;
+			break;
+		case 30:
+			regs->t5 = reg_value;
+			break;
+		case 31:
+			regs->t6 =reg_value;
+			break;
+		default:
+			printf("Error reg_num=%d for set_reg\n", reg_num);
+			break;
+	}
+}
+
+static long _exit_trap(ulong code, ulong epc, ulong tval, struct pt_regs *regs)
 {
 	static const char * const exception_code[] = {
 		"Instruction address misaligned",
@@ -139,6 +383,110 @@ static void _exit_trap(ulong code, ulong epc, ulong tval, struct pt_regs *regs)
 	if (gd->arch.resume) {
 		gd->arch.resume->code = code;
 		longjmp(gd->arch.resume->jump, 1);
+	}
+	if (code == ILLEGAL_INSTRUCTION) {
+		int opcode = *(int *)epc;
+		int aqrl = (opcode & AQRL_MASK) >> AQRL_SHIFT;
+		int rs2 = (opcode & RS2_MASK) >> RS2_SHIFT;
+		int rs1 = (opcode & RS1_MASK) >> RS1_SHIFT;
+		int rd = (opcode & RD_MASK) >> RD_SHIFT;
+		long rs2_value = get_reg(regs, rs2);
+		long rs1_value = get_reg(regs, rs1);
+		long rd_value = 0;
+		switch (opcode & AMO_MASK) {
+		case AMOADD_D_MATCH:
+			rd_value = atomic_add_d(rs1_value, rs2_value);
+			set_reg(regs, rd, rd_value);
+			return epc + 4;
+
+		case AMOADD_W_MATCH:
+			rd_value = atomic_add_w(rs1_value, rs2_value);
+			set_reg(regs, rd, rd_value);
+			return epc + 4;
+
+		case AMOAND_D_MATCH:
+			rd_value = atomic_and_d(rs1_value, rs2_value);
+			set_reg(regs, rd, rd_value);
+			return epc + 4;
+
+		case AMOAND_W_MATCH:
+			rd_value = atomic_and_w(rs1_value, rs2_value);
+			set_reg(regs, rd, rd_value);
+			return epc + 4;
+
+		case AMOMAX_D_MATCH:
+			rd_value = atomic_max_d(rs1_value, rs2_value);
+			set_reg(regs, rd, rd_value);
+			return epc + 4;
+
+		case AMOMAX_W_MATCH:
+			rd_value = atomic_max_w(rs1_value, rs2_value);
+			set_reg(regs, rd, rd_value);
+			return epc + 4;
+
+		case AMOMAXU_D_MATCH:
+			rd_value = atomic_maxu_d(rs1_value, rs2_value);
+			set_reg(regs, rd, rd_value);
+			return epc + 4;
+
+		case AMOMAXU_W_MATCH:
+			rd_value = atomic_maxu_w(rs1_value, rs2_value);
+			set_reg(regs, rd, rd_value);
+			return epc + 4;
+
+		case AMOMIN_D_MATCH:
+			rd_value = atomic_min_d(rs1_value, rs2_value);
+			set_reg(regs, rd, rd_value);
+			return epc + 4;
+
+		case AMOMIN_W_MATCH:
+			rd_value = atomic_min_w(rs1_value, rs2_value);
+			set_reg(regs, rd, rd_value);
+			return epc + 4;
+
+		case AMOMINU_D_MATCH:
+			rd_value = atomic_minu_d(rs1_value, rs2_value);
+			set_reg(regs, rd, rd_value);
+			return epc + 4;
+
+		case AMOMINU_W_MATCH:
+			rd_value = atomic_minu_w(rs1_value, rs2_value);
+			set_reg(regs, rd, rd_value);
+			return epc + 4;
+
+		case AMOOR_D_MATCH:
+			rd_value = atomic_or_d(rs1_value, rs2_value);
+			set_reg(regs, rd, rd_value);
+			return epc + 4;
+
+		case AMOOR_W_MATCH:
+			rd_value = atomic_or_w(rs1_value, rs2_value);
+			set_reg(regs, rd, rd_value);
+			return epc + 4;
+
+		case AMOSWAP_D_MATCH:
+			rd_value = atomic_swap_d(rs1_value, rs2_value);
+			set_reg(regs, rd, rd_value);
+			return epc + 4;
+
+		case AMOSWAP_W_MATCH:
+			rd_value = atomic_swap_w(rs1_value, rs2_value);
+			set_reg(regs, rd, rd_value);
+			return epc + 4;
+
+		case AMOXOR_D_MATCH:
+			rd_value = atomic_xor_d(rs1_value, rs2_value);
+			set_reg(regs, rd, rd_value);
+			return epc + 4;
+
+		case AMOXOR_W_MATCH:
+			rd_value = atomic_xor_w(rs1_value, rs2_value);
+			set_reg(regs, rd, rd_value);
+			return epc + 4;
+
+		default:
+			break;
+		}
 	}
 
 	if (code < ARRAY_SIZE(exception_code))
