@@ -5,32 +5,36 @@
 
 #include <common.h>
 #include <cpu_func.h>
-#include "shogun.h"
+#include <asm/arch-shogun/shogun.h>
 
 void icache_enable(void)
 {
-	int cca = CCA_CACHE_ENABLE;
+	/* PMP0 and PMP1 are cached, PMP2 are uncached. */
+	int cca = (CCA_CACHE_DISABLE << 16) | (CCA_CACHE_ENABLE << 8) | CCA_CACHE_ENABLE;
 	asm volatile ("csrw pmacfg0,%0"::"r"(cca):"memory");
 	asm volatile ("fence");
 }
 
 void icache_disable(void)
 {
-	int cca = CCA_CACHE_DISABLE;
+	/* PMP0, PMP1, PMP2 are uncached. */
+	int cca = (CCA_CACHE_DISABLE << 16) | (CCA_CACHE_DISABLE << 8) | CCA_CACHE_DISABLE;
 	asm volatile ("csrw pmacfg0,%0"::"r"(cca):"memory");
 	asm volatile ("fence");
 }
 
 void dcache_enable(void)
 {
-	int cca = CCA_CACHE_ENABLE;
+	/* PMP0 and PMP1 are cached, PMP2 are uncached. */
+	int cca = (CCA_CACHE_DISABLE << 16) | (CCA_CACHE_ENABLE << 8) | CCA_CACHE_ENABLE;
 	asm volatile ("csrw pmacfg0,%0"::"r"(cca):"memory");
 	asm volatile ("fence");
 }
 
 void dcache_disable(void)
 {
-	int cca = CCA_CACHE_DISABLE;
+	/* PMP0, PMP1, PMP2 are uncached. */
+	int cca = (CCA_CACHE_DISABLE << 16) | (CCA_CACHE_DISABLE << 8) | CCA_CACHE_DISABLE;
 	asm volatile ("csrw pmacfg0,%0"::"r"(cca):"memory");
 	asm volatile ("fence");
 }

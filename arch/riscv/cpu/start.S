@@ -15,6 +15,7 @@
 #include <system-constants.h>
 #include <asm/encoding.h>
 #include <generated/asm-offsets.h>
+#include <asm/arch-shogun/shogun.h>
 
 #ifdef CONFIG_32BIT
 #define LREG			lw
@@ -141,8 +142,8 @@ _start:
 	csrw	pmpaddr0, t0
 	li	t0, PMP_NAPOT | PMP_R | PMP_W | PMP_X
 	csrw	pmpcfg0, t0
-	/* Set up PMP Uncacheable */
-	li	t0, 2
+	/* Set up PMP Uncacheable for pmp0, pmp1, pmp2 */
+	li	t0, (CCA_CACHE_DISABLE << 16) | (CCA_CACHE_DISABLE << 8) | CCA_CACHE_DISABLE
 	csrw	pmacfg0, t0
 	fence
 
