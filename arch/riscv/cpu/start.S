@@ -139,8 +139,10 @@ _start:
 
 	/* Setup PMP */
 	li	t0, 0x2fffffff # 2G from 0x80000000
-	csrw	pmpaddr0, t0
-	li	t0, PMP_NAPOT | PMP_R | PMP_W | PMP_X
+	csrw	pmpaddr1, t0
+	li	t0, 0x1fffffffffffffff # All from 0x0
+	csrw	pmpaddr2, t0
+	li	t0, ((PMP_NAPOT | PMP_R | PMP_W | PMP_X) << 16) | ((PMP_NAPOT | PMP_R | PMP_W | PMP_X) << 8)
 	csrw	pmpcfg0, t0
 	/* Set up PMP Uncacheable for pmp0, pmp1, pmp2 */
 	li	t0, (CCA_CACHE_DISABLE << 16) | (CCA_CACHE_DISABLE << 8) | CCA_CACHE_DISABLE
