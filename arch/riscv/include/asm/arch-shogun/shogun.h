@@ -50,7 +50,11 @@
 #define ENABLE			0x1
 #define COUNT_STOP		(0x1 << 28)
 #define GIC_LOCAL_SECTION_OFS	0x8000
+#define GIC_VL_MASK		0x08
+#define GIC_VL_RMASK		0x0c
+#define GIC_VL_SMASK		0x10
 #define GIC_VL_COMPARE_MAP	0x44
+
 #define INDEXED(op, reg, idx, offset, base) \
 	li	idx, offset	;\
 	add	idx, idx, base	;\

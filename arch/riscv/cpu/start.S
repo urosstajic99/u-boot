@@ -123,6 +123,14 @@ _start:
 	# Set up mipsintctl
 	li	t0, 0x3f
 	csrw	mipsintctl, t0
+	# Clear mask for all
+	li	t0, 0x3f
+	li	t1, GIC_BASE + GIC_LOCAL_SECTION_OFS + GIC_VL_RMASK
+	sw	t0, 0(t1)
+	# Set mask for compare only
+	li	t0, 0x2
+	li	t1, GIC_BASE + GIC_LOCAL_SECTION_OFS + GIC_VL_SMASK
+	sw	t0, 0(t1)
 	# Set up comapre_map to hw#3 to trigger MTIP
 	li	t0, 0x80000003
 	li	t1, GIC_BASE + GIC_LOCAL_SECTION_OFS + GIC_VL_COMPARE_MAP
