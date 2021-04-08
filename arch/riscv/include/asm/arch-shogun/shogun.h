@@ -32,4 +32,35 @@
 #define L2_LINE_SIZE_SHIFT	8
 #define L2_LINE_SIZE_MASK	0xf
 
+#define PMP_R			0x01
+#define PMP_W			0x02
+#define PMP_X			0x04
+#define PMP_TOR			0x8
+#define PMP_NA4			0x10
+#define PMP_NAPOT		0x18
+
+#define CM_BASE			0x16100000
+#define GIC_BASE		0x16120000
+#define CPC_BASE		0x16200000
+#define GCR_CL_COH_EN		0x2008
+#define GCR_CL_COH_EN_EN	(0x1 << 0)
+#define GCR_BASE_OFFSET		0x0008
+#define GIC_BASE_OFFSET		0x0080
+#define CPC_BASE_OFFSET		0x0088
+#define ENABLE			0x1
+#define COUNT_STOP		(0x1 << 28)
+#define GIC_LOCAL_SECTION_OFS	0x8000
+#define GIC_VL_COMPARE_MAP	0x44
+#define INDEXED(op, reg, idx, offset, base) \
+	li	idx, offset	;\
+	add	idx, idx, base	;\
+	op	reg, (idx)
+
+#define BOSTON_PLAT_BASE	0x17ffd000
+#define BOSTON_PLAT_DDR3STAT	(BOSTON_PLAT_BASE + 0x14)
+#define BOSTON_PLAT_DDR3STAT_CALIB	(1 << 2)
+#define BOSTON_PLAT_NOCPCIE0ADDR        (BOSTON_PLAT_BASE + 0x3c)
+#define BOSTON_PLAT_NOCPCIE1ADDR        (BOSTON_PLAT_BASE + 0x40)
+#define BOSTON_PLAT_NOCPCIE2ADDR        (BOSTON_PLAT_BASE + 0x44)
+
 #endif /* __SHOGUN_H__ */
