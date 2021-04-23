@@ -601,6 +601,7 @@ static int run_main_loop(void)
 void My_Delay_Loop();
 static int my_test()
 {
+#if 0
 	int i;
 	int num_of_insn = 8;
 	int *start = (int *)My_Delay_Loop;
@@ -609,6 +610,8 @@ static int my_test()
 		*addr = *start;
 	}
         invalidate_icache_all();
+#endif
+	printf("My_Delay_Loop is at 0x%x\n", My_Delay_Loop);
 
 	return 0;
 }
