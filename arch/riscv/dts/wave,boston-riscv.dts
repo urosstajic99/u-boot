@@ -13,6 +13,7 @@
 
 	chosen {
 		stdout-path = &uart0;
+		bootargs = "root=/dev/sda rw earlycon";
 	};
 
 	cpus {
