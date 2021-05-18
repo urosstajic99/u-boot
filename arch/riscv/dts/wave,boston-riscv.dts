@@ -13,7 +13,7 @@
 
 	chosen {
 		stdout-path = &uart0;
-		bootargs = "root=/dev/sda rw earlycon";
+		bootargs = "root=/dev/sda rw earlycon console=ttyS0,115200n8r";
 	};
 
 	cpus {
@@ -24,7 +24,7 @@
 		cpu@0 {
 			device_type = "cpu";
 			compatible = "riscv";
-			mmu-type = "riscv,sv48";
+			mmu-type = "riscv,sv39";
 			riscv,isa = "rv64imafdcsu";
 			status = "okay";
 			reg = <0>;
