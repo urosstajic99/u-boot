@@ -14,15 +14,33 @@
 
 int checkboard(void)
 {
-	u32 changelist;
+	u32 changelist, cfg, core, uarch;
+	u64 marchid;
 
 	lowlevel_display("U-boot  ");
 
 	printf("Board: Wave Boston RISC-V\n");
 
 	changelist = __raw_readl((uint32_t *)BOSTON_PLAT_CORE_CL);
-	if (changelist > 1)
-		printf("CPU cl: %x\n", changelist);
+	if (changelist > 1) {
+		asm volatile ("csrr %0, marchid":"=r"(marchid)::);
+		core = (marchid >> 8) & 0xff;
+		uarch = marchid & 0xff;
+
+		printf("Core:  class%x uarch%x cl%x", core, uarch, changelist);
+
+		cfg = __raw_readl((uint32_t *)BOSTON_PLAT_BUILDCFG0);
+		if (cfg & BOSTON_PLAT_BUILDCFG0_CFG_NUM)
+			printf(" config %u",
+				(cfg & BOSTON_PLAT_BUILDCFG0_CFG_NUM) >> 8);
+		if (cfg & BOSTON_PLAT_BUILDCFG0_CFG_LTR)
+			printf("%c",
+				'a' + ((cfg & BOSTON_PLAT_BUILDCFG0_CFG_LTR) >> 4) - 1);
+		if (cfg & BOSTON_PLAT_BUILDCFG0_DP)
+			printf(", x%u debug port",
+				(cfg & BOSTON_PLAT_BUILDCFG0_DP_MULT) >> 28);
+		printf("\n");
+	}
 
 	return 0;
 }
