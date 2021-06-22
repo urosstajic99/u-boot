@@ -5,3 +5,4 @@
 obj-y += checkboard.o
 obj-y += lowlevel_init.o
 obj-y += boston-riscv.o
+obj-y += iocu.o

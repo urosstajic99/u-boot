@@ -33,8 +33,12 @@
  */
 #define CONFIG_PHY_REALTEK
 
+#define CONFIG_ENV_CALLBACK_LIST_STATIC \
+	"io" ENV_DOT_ESCAPE ".coherent:io_coherent,"
+
 /*
  * Miscellaneous
  */
+#define CONFIG_MISC_INIT_F
 
 #endif /* __CONFIG_BOSTON_RISCV_H */

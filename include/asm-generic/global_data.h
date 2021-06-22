@@ -702,6 +702,7 @@ enum gd_flags {
 	 * drivers shall not be called.
 	 */
 	GD_FLG_HAVE_CONSOLE = 0x8000000,
+	GD_FLG_COHERENT_DMA = 0x10000000,
 };
 
 #endif /* __ASSEMBLY__ */
