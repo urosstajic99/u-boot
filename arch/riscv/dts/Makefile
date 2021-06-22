@@ -17,6 +17,7 @@ dtb-$(CONFIG_TARGET_XILINX_MBV) += xilinx-mbv64.dtb
 dtb-$(CONFIG_TARGET_XILINX_MBV) += xilinx-binman.dtb
 dtb-$(CONFIG_TARGET_ASPEED_AST2700_IBEX) += ast2700-ibex.dtb
 dtb-$(CONFIG_TARGET_WAVE_BOSTON) += wave,boston-riscv.dtb
+dtb-$(CONFIG_TARGET_WAVE_BOSTON) += wave,boston-king-v.dtb
 
 include $(srctree)/scripts/Makefile.dts
 
