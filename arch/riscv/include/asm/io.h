@@ -14,16 +14,90 @@
 static inline void sync(void)
 {
 }
-
+#if 0
 #define __arch_getb(a)			(*(volatile unsigned char *)(a))
 #define __arch_getw(a)			(*(volatile unsigned short *)(a))
 #define __arch_getl(a)			(*(volatile unsigned int *)(a))
 #define __arch_getq(a)			(*(volatile unsigned long long *)(a))
 
-#define __arch_putb(v, a)		(*(volatile unsigned char *)(a) = (v))
-#define __arch_putw(v, a)		(*(volatile unsigned short *)(a) = (v))
-#define __arch_putl(v, a)		(*(volatile unsigned int *)(a) = (v))
-#define __arch_putq(v, a)		(*(volatile unsigned long long *)(a) = (v))
+static inline void *unmap_sysmem(const void *vaddr)
+{
+	phys_addr_t paddr = (phys_addr_t)vaddr;
+
+	paddr = paddr & ~0x40000000;
+	return (void *)(uintptr_t)paddr;
+}
+
+static inline phys_addr_t map_to_sysmem(const void *ptr)
+{
+	return (phys_addr_t)(uintptr_t)ptr;
+}
+#endif
+
+/*
+ * Generic virtual read/write.  Note that we don't support half-word
+ * read/writes.  We define __arch_*[bl] here, and leave __arch_*w
+ * to the architecture specific code.
+ */
+#if 0
+#define __arch_getb(a)			(*(unsigned char *)(a))
+#define __arch_getw(a)			(*(unsigned short *)(a))
+#define __arch_getl(a)			(*(unsigned int *)(a))
+#define __arch_getq(a)			(*(unsigned long long *)(a))
+
+#define __arch_putb(v, a)		(*(unsigned char *)(a) = (v))
+#define __arch_putw(v, a)		(*(unsigned short *)(a) = (v))
+#define __arch_putl(v, a)		(*(unsigned int *)(a) = (v))
+#define __arch_putq(v, a)		(*(unsigned long long *)(a) = (v))
+#endif
+
+static inline unsigned char __arch_getb(const volatile void __iomem *mem)
+{
+	unsigned char value;
+	asm volatile("lbu %0,0(%1)":"=r"(value):"r"(mem));
+	return value;
+}
+
+static inline unsigned short __arch_getw(const volatile void __iomem *mem)
+{
+	unsigned short value;
+	asm volatile("lhu %0,0(%1)":"=r"(value):"r"(mem));
+	return value;
+}
+
+static inline unsigned int __arch_getl(const volatile void __iomem *mem)
+{
+	unsigned int value;
+	asm volatile("lw %0,0(%1)":"=r"(value):"r"(mem));
+	return value;
+}
+
+static inline unsigned long long __arch_getq(const volatile void __iomem *mem)
+{
+	unsigned long long value;
+	asm volatile("ld %0,0(%1)":"=r"(value):"r"(mem));
+	return value;
+}
+
+static inline void __arch_putb(unsigned char value, volatile void __iomem *mem)
+{
+	asm volatile("sb %0,0(%1)"::"r"(value),"r"(mem));
+}
+
+static inline void __arch_putw(unsigned short value, volatile void __iomem *mem)
+{
+	asm volatile("sh %0,0(%1)"::"r"(value),"r"(mem));
+}
+
+static inline void __arch_putl(unsigned int value, volatile void __iomem *mem)
+{
+	asm volatile("sw %0,0(%1)"::"r"(value),"r"(mem));
+}
+
+static inline void __arch_putq(unsigned int value, volatile void __iomem *mem)
+{
+	asm volatile("sd %0,0(%1)"::"r"(value),"r"(mem));
+}
 
 #define __raw_writeb(v, a)		__arch_putb(v, a)
 #define __raw_writew(v, a)		__arch_putw(v, a)
