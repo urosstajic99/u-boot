@@ -39,7 +39,12 @@
  * execute that many retries, and keep sending retry packets until that time
  * is reached.
  */
-#define TIMEOUT_MS	((3 + (CONFIG_NET_RETRY_COUNT * 5)) * 1000)
+#ifndef CONFIG_NET_RETRY_COUNT
+# define TIMEOUT_COUNT	10		/* # of timeouts before giving up */
+#else
+# define TIMEOUT_COUNT	(CONFIG_NET_RETRY_COUNT)
+#endif
+#define TIMEOUT_MS	((3 + (TIMEOUT_COUNT * 5)) * 1000)
 
 /*
  * According to rfc951 : 7.2. Client Retransmission Strategy
