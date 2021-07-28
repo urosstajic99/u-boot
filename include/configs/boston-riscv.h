@@ -27,6 +27,7 @@
  */
 #define CONFIG_SYS_MAX_FLASH_BANKS_DETECT       1
 #define CONFIG_SYS_MAX_FLASH_SECT               1024
+#define CONFIG_SYS_WRITE_SWAPPED_DATA
 
 /*
  * Ethernet
