@@ -598,8 +598,8 @@ static int run_main_loop(void)
 	return 0;
 }
 
-void My_Delay_Loop();
-static int my_test()
+void My_Delay_Loop(void);
+static int my_test(void)
 {
 #if 0
 	int i;
@@ -611,7 +611,7 @@ static int my_test()
 	}
         invalidate_icache_all();
 #endif
-	printf("My_Delay_Loop is at 0x%x\n", My_Delay_Loop);
+	printf("My_Delay_Loop is at 0x%lx\n", (long)My_Delay_Loop);
 
 	return 0;
 }
