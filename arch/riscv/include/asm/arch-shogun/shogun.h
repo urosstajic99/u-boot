@@ -48,12 +48,17 @@
 #define GCR_OFF_LOCAL		0x2000
 #define GCR_OFF_REDIRECT	0x4000
 
-/* CPUC Block offsets */
+/* CPC Block offsets */
 #define CPC_OFF_GLOBAL		0x0000
 #define CPC_OFF_LOCAL		0x2000
 #define CPC_OFF_REDIRECT	0x4000
 
 #define CPC_PWRUP_CTL		0x0030
+
+#define CPC_SYS_CONFIG		0x0140
+
+#define CPC_Cx_CMD		0x0000
+#define CPC_Cx_CMD_RESET	0x4
 
 /* GCR_CONFIG */
 #define GCR_CONFIG		0x0000

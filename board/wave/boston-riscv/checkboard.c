@@ -21,7 +21,7 @@ int checkboard(void)
 
 	printf("Board: Wave Boston RISC-V\n");
 
-	changelist = __raw_readl((uint32_t *)BOSTON_PLAT_CORE_CL);
+	changelist = in_le32((uint32_t *)BOSTON_PLAT_CORE_CL);
 	if (changelist > 1) {
 		asm volatile ("csrr %0, marchid":"=r"(marchid)::);
 		core = (marchid >> 8) & 0xff;
@@ -29,7 +29,7 @@ int checkboard(void)
 
 		printf("Core:  class%x uarch%x cl%x", core, uarch, changelist);
 
-		cfg = __raw_readl((uint32_t *)BOSTON_PLAT_BUILDCFG0);
+		cfg = in_le32((uint32_t *)BOSTON_PLAT_BUILDCFG0);
 		if (cfg & BOSTON_PLAT_BUILDCFG0_CFG_NUM)
 			printf(" config %u",
 				(cfg & BOSTON_PLAT_BUILDCFG0_CFG_NUM) >> 8);
