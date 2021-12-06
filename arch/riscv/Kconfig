@@ -65,6 +65,7 @@ config TARGET_MIPS_BOSTON
 	select DM_SERIAL
 	select OF_CONTROL
 	select DISTRO_DEFAULTS
+	select CMD_ENDIAN
 	imply CMD_DM
 
 endchoice
