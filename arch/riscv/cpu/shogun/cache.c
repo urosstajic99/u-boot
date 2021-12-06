@@ -7,6 +7,7 @@
 #include <cpu_func.h>
 #include <asm/arch-shogun/shogun.h>
 
+#if 0
 void icache_enable(void)
 {
 	/* PMP0 and PMP1 are cached, PMP2 are uncached. */
@@ -38,6 +39,7 @@ void dcache_disable(void)
 	asm volatile ("csrw pmacfg0,%0"::"r"(cca):"memory");
 	asm volatile ("fence");
 }
+#endif
 
 #define cache_loop(start, end, lsize, op) do {				\
 	const void *addr = (const void *)(start & ~(lsize - 1));	\

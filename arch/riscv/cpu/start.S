@@ -151,10 +151,18 @@ ENDIAN_OK:
 	csrw	pmpaddr2, t0
 	li	t0, ((PMP_NAPOT | PMP_R | PMP_W | PMP_X) << 16) | ((PMP_NAPOT | PMP_R | PMP_W | PMP_X) << 8)
 	csrw	pmpcfg0, t0
-	/* Set up PMP Uncacheable for pmp0, pmp1, pmp2 */
-	li	t0, (CCA_CACHE_DISABLE << 16) | (CCA_CACHE_DISABLE << 8) | CCA_CACHE_DISABLE
+	/* Set up PMP cacheable for pmp0 and pmp1, uncacheable for pmp2 */
+	li	t0, (CCA_CACHE_DISABLE << 16) | (CCA_CACHE_ENABLE << 8) | CCA_CACHE_ENABLE
 	csrw	pmacfg0, t0
 	fence
+
+	// Access 1 MB area from 0x80000000
+	li	t0, 0x80000000
+	li	t1, 0x80000000 + 1*1024*1024
+ACCESS_1M:
+	ld	zero, 0(t0)
+	add	t0, t0, 64
+	bne	t0, t1, ACCESS_1M
 
 	# Set up mipsintctl
 	li	t0, 0x3f
