@@ -3171,3 +3171,4 @@ config CMD_SPAWN_NUM_JOBS
 	  spawn command.
 
 endif
+source "arch/riscv/cmd/Kconfig"
