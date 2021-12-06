@@ -57,6 +57,7 @@ CFLAGS_EFI		+= $(ARCH_FLAGS)
 
 head-y := arch/riscv/cpu/start.o
 
+libs-y += arch/riscv/cmd/
 libs-y += arch/riscv/cpu/
 libs-y += arch/riscv/cpu/$(CPU)/
 libs-y += arch/riscv/lib/
