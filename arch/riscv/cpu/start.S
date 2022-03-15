@@ -147,12 +147,16 @@ ENDIAN_OK:
 	/* Setup PMP */
 	li	t0, 0x2fffffff # 2G from 0x80000000
 	csrw	pmpaddr1, t0
-	li	t0, 0x1fffffffffffffff # All from 0x0
+	li	t0, 0x07ff7fff # 0x40000 from 0x1ffc0000
 	csrw	pmpaddr2, t0
-	li	t0, ((PMP_NAPOT | PMP_R | PMP_W | PMP_X) << 16) | ((PMP_NAPOT | PMP_R | PMP_W | PMP_X) << 8)
+	li	t0, 0x07f3ffff # 2M from 0x1fc00000
+	csrw	pmpaddr3, t0
+	li	t0, 0x1fffffffffffffff # All from 0x0
+	csrw	pmpaddr4, t0
+	li	t0, ((PMP_NAPOT | PMP_R | PMP_W | PMP_X) << 32) | ((PMP_NAPOT | PMP_R | PMP_X) << 24) | ((PMP_NAPOT | PMP_R | PMP_W | PMP_X) << 16) | ((PMP_NAPOT | PMP_R | PMP_W | PMP_X) << 8)
 	csrw	pmpcfg0, t0
-	/* Set up PMP cacheable for pmp0 and pmp1, uncacheable for pmp2 */
-	li	t0, (CCA_CACHE_DISABLE << 16) | (CCA_CACHE_ENABLE << 8) | CCA_CACHE_ENABLE
+	/* Set up PMP cacheable for pmp0, pmp1, pmp3, uncacheable for pmp2, pmp4 */
+	li	t0, (CCA_CACHE_DISABLE << 32) | (CCA_CACHE_ENABLE << 24) | (CCA_CACHE_DISABLE << 16) | (CCA_CACHE_ENABLE << 8) | CCA_CACHE_ENABLE
 	csrw	pmacfg0, t0
 	fence
 
