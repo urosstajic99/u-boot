@@ -13,11 +13,27 @@
 #include <asm/syscon.h>
 #include <linux/err.h>
 
+#define SHOGUN_TIMER_ADDR 0x16120010
+#define KINGV_TIMER_ADDR 0x16200050
+
+static long timer_addr = 0;
+
 DECLARE_GLOBAL_DATA_PTR;
 
 int riscv_get_time(u64 *time)
 {
-	*time = readq((void __iomem *)0x16120010);
+	const char *model;
+	if (timer_addr == 0)
+	{
+		timer_addr = SHOGUN_TIMER_ADDR;
+#ifdef CONFIG_OF_CONTROL
+		model = fdt_getprop(gd->fdt_blob, 0, "model", NULL);
+		if (strcmp (model, "king-v") == 0)
+			timer_addr = KINGV_TIMER_ADDR;
+#endif
+	}
+
+	*time = readq((void __iomem *)timer_addr);
 
 	return 0;
 }
