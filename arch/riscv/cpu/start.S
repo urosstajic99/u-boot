@@ -40,6 +40,10 @@ secondary_harts_relocation_error:
 .section .text
 .globl _start
 _start:
+	# We need to disable load bonding and store bonding for now.
+	li      t0, (1<<12)|(1<<13)
+	csrs    mipsconfig7, t0
+
 	li	x1,0
 	li	x2,0
 	li	x3,0
