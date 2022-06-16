@@ -14,7 +14,8 @@
 #include <linux/err.h>
 
 #define SHOGUN_TIMER_ADDR 0x16120010
-#define KINGV_TIMER_ADDR 0x16200050
+/* FIXME. This address is for QEMU CLINT mtimer. */
+#define KINGV_TIMER_ADDR 0x1614bff8
 
 static long timer_addr = 0;
 

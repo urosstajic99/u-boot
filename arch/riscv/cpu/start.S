@@ -33,6 +33,8 @@
 #define SYM_SIZE		0x18
 #endif
 
+#define KINGV			1
+
 .section .data
 secondary_harts_relocation_error:
 	.ascii "Relocation of secondary harts has failed, error %d\n"
@@ -95,13 +97,21 @@ DDR_INIT_DONE:
 #endif
 SWITCH_ENDIAN:
 	li	s0, CM_BASE
+#ifdef KINGV
+	li	t0, 0x1fb80000
+#else
 	li	t0, 0x1fbf8000
+#endif
 
 	li	t1, CM_BASE
 	sd	t1, GCR_BASE_OFFSET(t0)
 
+#ifdef KINGV
+	/* empty */
+#else
 	li	t0, CPC_BASE + ENABLE
 	INDEXED(sd, t0, t1, CPC_BASE_OFFSET, s0)
+#endif
 
 	/* Write the new endianness */
 	li	s1, CPC_BASE
@@ -118,7 +128,11 @@ SWITCH_ENDIAN:
 ENDIAN_OK:
 
 	li	s0, CM_BASE
+#ifdef KINGV
+	li	t0, 0x1fb80000
+#else
 	li	t0, 0x1fbf8000
+#endif
 
 	li	t1, CM_BASE
 	sd	t1, GCR_BASE_OFFSET(t0)
@@ -126,6 +140,9 @@ ENDIAN_OK:
 	li	t0, GCR_CL_COH_EN_EN
 	INDEXED(sd, t0, t1, GCR_CL_COH_EN, s0)
 
+#ifdef KINGV
+	/* empty */
+#else
 	li	t0, GIC_BASE + ENABLE
 	INDEXED(sd, t0, t1, GIC_BASE_OFFSET, s0)
 
@@ -139,6 +156,7 @@ ENDIAN_OK:
 	not	t2, t2
 	and	t1, t1, t2
 	sd	t1, 0(t0)
+#endif
 
 	/* Map all PCIe DMA access to its default, non-IOCU, target */
 	li	t0,BOSTON_PLAT_NOCPCIE0ADDR
@@ -149,6 +167,9 @@ ENDIAN_OK:
 	sw	zero, 0(t0)
 
 	/* Setup PMP */
+#ifdef KINGV
+	/* empty */
+#else
 	li	t0, 0x2fffffff # 2G from 0x80000000
 	csrw	pmpaddr1, t0
 	li	t0, 0x07ff7fff # 0x40000 from 0x1ffc0000
@@ -187,6 +208,7 @@ ACCESS_1M:
 	li	t0, 0x80000003
 	li	t1, GIC_BASE + GIC_LOCAL_SECTION_OFS + GIC_VL_COMPARE_MAP
 	sw	t0, 0(t1)
+#endif
 
 #if CONFIG_IS_ENABLED(RISCV_MMODE)
 	csrr	a0, CSR_MHARTID
