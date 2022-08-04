@@ -13,25 +13,25 @@
 #include <asm/syscon.h>
 #include <linux/err.h>
 
+#define KINGV_MARCHID 0x8000000000000201
+
 #define SHOGUN_TIMER_ADDR 0x16120010
 /* FIXME. This address is for QEMU CLINT mtimer. */
 #define KINGV_TIMER_ADDR 0x1614bff8
 
 static long timer_addr = 0;
 
-DECLARE_GLOBAL_DATA_PTR;
-
 int riscv_get_time(u64 *time)
 {
-	const char *model;
+	long marchid;
 	if (timer_addr == 0)
 	{
 		timer_addr = SHOGUN_TIMER_ADDR;
-#ifdef CONFIG_OF_CONTROL
-		model = fdt_getprop(gd->fdt_blob, 0, "model", NULL);
-		if (strcmp (model, "king-v") == 0)
+
+		/* Check if marchid is King-V */
+		asm volatile("csrr %0, marchid":"=r"(marchid));
+		if (marchid == KINGV_MARCHID)
 			timer_addr = KINGV_TIMER_ADDR;
-#endif
 	}
 
 	*time = readq((void __iomem *)timer_addr);
