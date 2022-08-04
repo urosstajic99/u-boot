@@ -33,7 +33,6 @@
 #define SYM_SIZE		0x18
 #endif
 
-#define KINGV			1
 
 .section .data
 secondary_harts_relocation_error:
@@ -78,6 +77,11 @@ _start:
 	li	x30,0
 	li	x31,0
 
+	/* a2 has marchid */
+	csrr	a2, marchid
+	/* a3 has King-V marchid */
+	li	a3, 0x8000000000000201
+
 	/* Check mstatus bit 37 as the endianness */
 	csrr	s2, mstatus
 	srli	s2, s2, 37
@@ -97,21 +101,25 @@ DDR_INIT_DONE:
 #endif
 SWITCH_ENDIAN:
 	li	s0, CM_BASE
-#ifdef KINGV
+	/* TEST KING-V */
+	bne	a2, a3, 1f
 	li	t0, 0x1fb80000
-#else
+	j	2f
+1:
 	li	t0, 0x1fbf8000
-#endif
+2:
 
 	li	t1, CM_BASE
 	sd	t1, GCR_BASE_OFFSET(t0)
 
-#ifdef KINGV
+	/* TEST KING-V */
+	bne	a2, a3, 1f
 	/* empty */
-#else
+	j	2f
+1:
 	li	t0, CPC_BASE + ENABLE
 	INDEXED(sd, t0, t1, CPC_BASE_OFFSET, s0)
-#endif
+2:
 
 	/* Write the new endianness */
 	li	s1, CPC_BASE
@@ -128,11 +136,13 @@ SWITCH_ENDIAN:
 ENDIAN_OK:
 
 	li	s0, CM_BASE
-#ifdef KINGV
+	/* TEST KING-V */
+	bne	a2, a3, 1f
 	li	t0, 0x1fb80000
-#else
+	j	2f
+1:
 	li	t0, 0x1fbf8000
-#endif
+2:
 
 	li	t1, CM_BASE
 	sd	t1, GCR_BASE_OFFSET(t0)
@@ -140,9 +150,11 @@ ENDIAN_OK:
 	li	t0, GCR_CL_COH_EN_EN
 	INDEXED(sd, t0, t1, GCR_CL_COH_EN, s0)
 
-#ifdef KINGV
+	/* TEST KING-V */
+	bne	a2, a3, 1f
 	/* empty */
-#else
+	j	2f
+1:
 	li	t0, GIC_BASE + ENABLE
 	INDEXED(sd, t0, t1, GIC_BASE_OFFSET, s0)
 
@@ -156,7 +168,7 @@ ENDIAN_OK:
 	not	t2, t2
 	and	t1, t1, t2
 	sd	t1, 0(t0)
-#endif
+2:
 
 	/* Map all PCIe DMA access to its default, non-IOCU, target */
 	li	t0,BOSTON_PLAT_NOCPCIE0ADDR
@@ -167,9 +179,6 @@ ENDIAN_OK:
 	sw	zero, 0(t0)
 
 	/* Setup PMP */
-#ifdef KINGV
-	/* empty */
-#else
 	li	t0, 0x2fffffff # 2G from 0x80000000
 	csrw	pmpaddr1, t0
 	li	t0, 0x07ff7fff # 0x40000 from 0x1ffc0000
@@ -180,11 +189,24 @@ ENDIAN_OK:
 	csrw	pmpaddr4, t0
 	li	t0, ((PMP_NAPOT | PMP_R | PMP_W | PMP_X) << 32) | ((PMP_NAPOT | PMP_R | PMP_X) << 24) | ((PMP_NAPOT | PMP_R | PMP_W | PMP_X) << 16) | ((PMP_NAPOT | PMP_R | PMP_W | PMP_X) << 8)
 	csrw	pmpcfg0, t0
+
+	/* TEST KING-V */
+	bne	a2, a3, 1f
+	/* Set up PMP uncacheable for pmp0, pmp1, pmp3, uncacheable for pmp2, pmp4 */
+	li	t0, (CCA_CACHE_DISABLE << 32) | (CCA_CACHE_DISABLE << 24) | (CCA_CACHE_DISABLE << 16) | (CCA_CACHE_DISABLE << 8) | CCA_CACHE_DISABLE
+	j	2f
+1:
 	/* Set up PMP cacheable for pmp0, pmp1, pmp3, uncacheable for pmp2, pmp4 */
 	li	t0, (CCA_CACHE_DISABLE << 32) | (CCA_CACHE_ENABLE << 24) | (CCA_CACHE_DISABLE << 16) | (CCA_CACHE_ENABLE << 8) | CCA_CACHE_ENABLE
+2:
 	csrw	pmacfg0, t0
 	fence
 
+	/* TEST KING-V */
+	bne	a2, a3, 1f
+	/* empty */
+	j	2f
+1:
 	// Access 1 MB area from 0x80000000
 	li	t0, 0x80000000
 	li	t1, 0x80000000 + 1*1024*1024
@@ -208,7 +230,7 @@ ACCESS_1M:
 	li	t0, 0x80000003
 	li	t1, GIC_BASE + GIC_LOCAL_SECTION_OFS + GIC_VL_COMPARE_MAP
 	sw	t0, 0(t1)
-#endif
+2:
 
 #if CONFIG_IS_ENABLED(RISCV_MMODE)
 	csrr	a0, CSR_MHARTID
