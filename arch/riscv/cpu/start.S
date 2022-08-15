@@ -77,10 +77,18 @@ _start:
 	li	x30,0
 	li	x31,0
 
+	/* a0 has mhartid */
+	csrr	a0, CSR_MHARTID
+
 	/* a2 has marchid */
 	csrr	a2, marchid
 	/* a3 has King-V marchid */
 	li	a3, 0x8000000000000201
+
+	/* Test mhartid */
+	beq	a0, zero, 1f
+	j	setup_pmp
+1:
 
 	/* Check mstatus bit 37 as the endianness */
 	csrr	s2, mstatus
@@ -178,6 +186,7 @@ ENDIAN_OK:
 	li	t0,BOSTON_PLAT_NOCPCIE2ADDR
 	sw	zero, 0(t0)
 
+setup_pmp:
 	/* Setup PMP */
 	li	t0, 0x2fffffff # 2G from 0x80000000
 	csrw	pmpaddr1, t0
@@ -192,12 +201,12 @@ ENDIAN_OK:
 
 	/* TEST KING-V */
 	bne	a2, a3, 1f
-	/* Set up PMP uncacheable for pmp0, pmp1, pmp3, uncacheable for pmp2, pmp4 */
+	/* Set uncacheable for pmp0, pmp1, pmp2, pmp3, pmp4 */
 	li	t0, (CCA_CACHE_DISABLE << 32) | (CCA_CACHE_DISABLE << 24) | (CCA_CACHE_DISABLE << 16) | (CCA_CACHE_DISABLE << 8) | CCA_CACHE_DISABLE
 	j	2f
 1:
-	/* Set up PMP cacheable for pmp0, pmp1, pmp3, uncacheable for pmp2, pmp4 */
-	li	t0, (CCA_CACHE_DISABLE << 32) | (CCA_CACHE_ENABLE << 24) | (CCA_CACHE_DISABLE << 16) | (CCA_CACHE_ENABLE << 8) | CCA_CACHE_ENABLE
+	/* Set cacheable for pmp0, pmp1, uncacheable for pmp2, pmp3, pmp4 */
+	li	t0, (CCA_CACHE_DISABLE << 32) | (CCA_CACHE_DISABLE << 24) | (CCA_CACHE_DISABLE << 16) | (CCA_CACHE_ENABLE << 8) | CCA_CACHE_ENABLE
 2:
 	csrw	pmacfg0, t0
 	fence
@@ -207,6 +216,10 @@ ENDIAN_OK:
 	/* empty */
 	j	2f
 1:
+
+	/* Test mhartid */
+	bne	a0, zero, ACCESS_1M_DONE
+
 	// Access 1 MB area from 0x80000000
 	li	t0, 0x80000000
 	li	t1, 0x80000000 + 1*1024*1024
@@ -215,6 +228,7 @@ ACCESS_1M:
 	add	t0, t0, 64
 	bne	t0, t1, ACCESS_1M
 
+ACCESS_1M_DONE:
 	# Set up mipsintctl
 	li	t0, 0x3f
 	csrw	mipsintctl, t0
@@ -231,6 +245,13 @@ ACCESS_1M:
 	li	t1, GIC_BASE + GIC_LOCAL_SECTION_OFS + GIC_VL_COMPARE_MAP
 	sw	t0, 0(t1)
 2:
+
+	/* Test mhartid */
+	beq	a0, zero, 1f
+	/* Jump to 0x80000000 */
+	li	t0, 0x80000000
+	jr	t0
+1:
 
 #if CONFIG_IS_ENABLED(RISCV_MMODE)
 	csrr	a0, CSR_MHARTID
