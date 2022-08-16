@@ -86,8 +86,7 @@ _start:
 	li	a3, 0x8000000000000201
 
 	/* Test mhartid */
-	beq	a0, zero, 1f
-	j	setup_pmp
+	bne	a0, zero, setup_pmp
 1:
 
 	/* Check mstatus bit 37 as the endianness */
@@ -121,9 +120,7 @@ SWITCH_ENDIAN:
 	sd	t1, GCR_BASE_OFFSET(t0)
 
 	/* TEST KING-V */
-	bne	a2, a3, 1f
-	/* empty */
-	j	2f
+	beq	a2, a3, 2f
 1:
 	li	t0, CPC_BASE + ENABLE
 	INDEXED(sd, t0, t1, CPC_BASE_OFFSET, s0)
@@ -159,9 +156,7 @@ ENDIAN_OK:
 	INDEXED(sd, t0, t1, GCR_CL_COH_EN, s0)
 
 	/* TEST KING-V */
-	bne	a2, a3, 1f
-	/* empty */
-	j	2f
+	beq	a2, a3, 2f
 1:
 	li	t0, GIC_BASE + ENABLE
 	INDEXED(sd, t0, t1, GIC_BASE_OFFSET, s0)
@@ -212,9 +207,7 @@ setup_pmp:
 	fence
 
 	/* TEST KING-V */
-	bne	a2, a3, 1f
-	/* empty */
-	j	2f
+	beq	a2, a3, 2f
 1:
 
 	/* Test mhartid */
