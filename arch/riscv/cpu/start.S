@@ -198,11 +198,16 @@ setup_pmp:
 	bne	a2, a3, 1f
 	/* Set uncacheable for pmp0, pmp1, pmp2, pmp3, pmp4 */
 	li	t0, (CCA_CACHE_DISABLE << 32) | (CCA_CACHE_DISABLE << 24) | (CCA_CACHE_DISABLE << 16) | (CCA_CACHE_DISABLE << 8) | CCA_CACHE_DISABLE
-	j	2f
+	j	3f
 1:
-	/* Set cacheable for pmp0, pmp1, uncacheable for pmp2, pmp3, pmp4 */
+	/* Test mhartid */
+	bne	a0, zero, 2f
+	/* HART 0: Set cacheable for pmp0, pmp1, pmp3, uncacheable for pmp2, pmp4 */
+	li	t0, (CCA_CACHE_DISABLE << 32) | (CCA_CACHE_ENABLE << 24) | (CCA_CACHE_DISABLE << 16) | (CCA_CACHE_ENABLE << 8) | CCA_CACHE_ENABLE
+	j	3f
+2:	/* HART 1 or above: Set cacheable for pmp0, pmp1, uncacheable for pmp2, pmp3, pmp4 */
 	li	t0, (CCA_CACHE_DISABLE << 32) | (CCA_CACHE_DISABLE << 24) | (CCA_CACHE_DISABLE << 16) | (CCA_CACHE_ENABLE << 8) | CCA_CACHE_ENABLE
-2:
+3:
 	csrw	pmacfg0, t0
 	fence
 
@@ -622,6 +627,15 @@ call_board_init_r:
 	mv	a0, s3			/* gd_t */
 	mv	a1, s4			/* dest_addr */
 	mv	s0, zero		/* fp == NULL */
+
+	/* Set flash uncached at pmp3 */
+	csrr	t0, pmacfg0
+	li	t1, 0xffffffffffffffff - (0xff << 24)
+	and	t0, t0, t1
+	li	t1, (CCA_CACHE_DISABLE << 24)
+	or	t0, t0, t1
+	csrw	pmacfg0, t0
+	fence
 
 /*
  * jump to it ...
