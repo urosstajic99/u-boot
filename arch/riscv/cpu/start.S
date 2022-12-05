@@ -153,11 +153,12 @@ ENDIAN_OK:
 	sd	t1, GCR_BASE_OFFSET(t0)
 
 	li	t0, GCR_CL_COH_EN_EN
-	INDEXED(sd, t0, t1, GCR_CL_COH_EN, s0)
 
 	/* TEST KING-V */
 	beq	a2, a3, 2f
 1:
+	INDEXED(sd, t0, t1, GCR_CL_COH_EN, s0)
+
 	li	t0, GIC_BASE + ENABLE
 	INDEXED(sd, t0, t1, GIC_BASE_OFFSET, s0)
 
@@ -171,7 +172,10 @@ ENDIAN_OK:
 	not	t2, t2
 	and	t1, t1, t2
 	sd	t1, 0(t0)
+	j	3f
 2:
+	INDEXED(sd, t0, t1, KINGV_GCR_C0_COH_EN, s0)
+3:
 
 	/* Map all PCIe DMA access to its default, non-IOCU, target */
 	li	t0,BOSTON_PLAT_NOCPCIE0ADDR
