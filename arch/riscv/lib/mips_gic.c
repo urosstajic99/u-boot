@@ -16,8 +16,7 @@
 #define KINGV_MARCHID 0x8000000000000201
 
 #define SHOGUN_TIMER_ADDR 0x16120010
-/* FIXME. This address is for QEMU CLINT mtimer. */
-#define KINGV_TIMER_ADDR 0x1614bff8
+#define KINGV_TIMER_ADDR 0x16108050
 
 static long timer_addr = 0;
 
