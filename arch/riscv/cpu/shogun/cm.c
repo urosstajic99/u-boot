@@ -9,6 +9,7 @@
 #include <common.h>
 #include <asm/io.h>
 #include <asm/arch-shogun/cm.h>
+#include <asm/arch-shogun/shogun.h>
 
 void setup_redirect(unsigned int cluster, unsigned int core,
 		    unsigned int vp, unsigned int block)
@@ -111,6 +112,7 @@ int init_cluster_l2(unsigned int cluster)
 int mips_cm_init(void)
 {
 	int err;
+	long marchid;
 
 	mips_cpc_init();
 
@@ -118,7 +120,10 @@ int mips_cm_init(void)
 	if (err)
 		return err;
 
-	setup_mmio_limits();
+	/* Check if marchid is King-V */
+	asm volatile("csrr %0, marchid":"=r"(marchid));
+	if (marchid != KINGV_MARCHID)
+		setup_mmio_limits();
 
         return 0;
 }
