@@ -12,11 +12,7 @@
 #include <asm/io.h>
 #include <asm/syscon.h>
 #include <linux/err.h>
-
-#define KINGV_MARCHID 0x8000000000000201
-
-#define SHOGUN_TIMER_ADDR 0x16120010
-#define KINGV_TIMER_ADDR 0x16108050
+#include <asm/arch-shogun/shogun.h>
 
 static long timer_addr = 0;
 
