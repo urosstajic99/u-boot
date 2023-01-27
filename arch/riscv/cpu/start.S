@@ -200,8 +200,8 @@ setup_pmp:
 
 	/* TEST KING-V */
 	bne	a2, a3, 1f
-	/* Set uncacheable for pmp0, pmp1, pmp2, pmp3, pmp4 */
-	li	t0, (CCA_CACHE_DISABLE << 32) | (CCA_CACHE_DISABLE << 24) | (CCA_CACHE_DISABLE << 16) | (CCA_CACHE_DISABLE << 8) | CCA_CACHE_DISABLE
+	/* Set cacheable for pmp0, pmp1, pmp3, uncacheable for pmp2, pmp4 */
+	li	t0, (CCA_CACHE_DISABLE << 32) | (CCA_CACHE_ENABLE << 24) | (CCA_CACHE_DISABLE << 16) | (CCA_CACHE_ENABLE << 8) | CCA_CACHE_ENABLE
 	j	3f
 1:
 	/* Test mhartid */
