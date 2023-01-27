@@ -48,15 +48,47 @@ __weak const struct mmio_region *get_mmio_regions(void)
 	return NULL;
 }
 
+static void kingv_setup_mmio_limits(void)
+{
+	void __iomem *gcrs = mips_cm_base();
+	const struct mmio_region *rgn = get_mmio_regions();
+	unsigned int num_clusters = mips_cm_num_clusters();
+	unsigned int limit = CONFIG_MIPS_CM_MMIO_LIMIT / num_clusters;
+	unsigned int i, reg_off;
+
+	if (!rgn)
+		return;
+
+	if (num_clusters != 1)
+	{
+		// FIXME! Need to support multiple clusters.
+		return;
+	}
+
+	reg_off = GCR_MMIO0_BOTTOM;
+
+	for (i = 0; rgn[i].addr_high; i++) {
+		__raw_writeq(rgn[i].addr_high & GCR_MMIO0_TOP_ADDR,
+			     gcrs + reg_off + (GCR_MMIO0_TOP - GCR_MMIO0_BOTTOM));
+
+		__raw_writeq((rgn[i].addr_low & GCR_MMIO0_BOTTOM_ADDR) |
+			     (rgn[i].port << GCR_MMIO0_BOTTOM_PORT_SHIFT) |
+			     (rgn[i].enable ? GCR_MMIO0_BOTTOM_ENABLE : 0),
+			     gcrs + reg_off);
+		reg_off += GCR_MMIO1_BOTTOM - GCR_MMIO0_BOTTOM;
+	}
+
+	__raw_writel(limit, gcrs + GCR_MMIO_REQ_LIMIT);
+}
+
 static void setup_mmio_limits(void)
 {
-	DECLARE_GLOBAL_DATA_PTR;
 	void __iomem *gcrs = mips_cm_base();
 	const struct mmio_region *rgn = get_mmio_regions();
 	unsigned int num_clusters = mips_cm_num_clusters();
 	unsigned int limit = CONFIG_MIPS_CM_MMIO_LIMIT / num_clusters;
 	unsigned int cm_rev = __raw_readl(gcrs + GCR_REV);
-	unsigned int cl, i, reg_off, mask, tgt;
+	unsigned int cl, i, reg_off;
 
 	if (!rgn)
 		return;
@@ -124,6 +156,8 @@ int mips_cm_init(void)
 	asm volatile("csrr %0, marchid":"=r"(marchid));
 	if (marchid != KINGV_MARCHID)
 		setup_mmio_limits();
+	else
+		kingv_setup_mmio_limits();
 
         return 0;
 }
