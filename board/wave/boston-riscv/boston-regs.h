@@ -6,7 +6,9 @@
 #ifndef __BOARD_BOSTON_REGS_H__
 #define __BOARD_BOSTON_REGS_H__
 
+#ifndef BOSTON_PLAT_BASE
 #define BOSTON_PLAT_BASE		(0x17ffd000)
+#endif
 #define BOSTON_LCD_BASE			(0x17fff000)
 
 /*
