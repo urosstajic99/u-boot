@@ -198,12 +198,6 @@ setup_pmp:
 	li	t0, ((PMP_NAPOT | PMP_R | PMP_W | PMP_X) << 32) | ((PMP_NAPOT | PMP_R | PMP_X) << 24) | ((PMP_NAPOT | PMP_R | PMP_W | PMP_X) << 16) | ((PMP_NAPOT | PMP_R | PMP_W | PMP_X) << 8)
 	csrw	pmpcfg0, t0
 
-	/* TEST KING-V */
-	bne	a2, a3, 1f
-	/* Set cacheable for pmp0, pmp1, pmp3, uncacheable for pmp2, pmp4 */
-	li	t0, (CCA_CACHE_DISABLE << 32) | (CCA_CACHE_ENABLE << 24) | (CCA_CACHE_DISABLE << 16) | (CCA_CACHE_ENABLE << 8) | CCA_CACHE_ENABLE
-	j	3f
-1:
 	/* Test mhartid */
 	bne	a0, zero, 2f
 	/* HART 0: Set cacheable for pmp0, pmp1, pmp3, uncacheable for pmp2, pmp4 */
