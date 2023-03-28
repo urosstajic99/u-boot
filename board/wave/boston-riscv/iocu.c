@@ -111,5 +111,5 @@ U_BOOT_ENV_CALLBACK(io_coherent, on_io_coherent);
 
 int misc_init_f(void)
 {
-	return set_io_coherent(env_get_yesno("io.coherent") == 1);
+	return set_io_coherent(env_get_yesno("io.coherent") != 0);
 }
