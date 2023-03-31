@@ -42,4 +42,9 @@
  */
 #define CONFIG_MISC_INIT_F
 
+/*
+ * LCD Display
+ */
+#define CONFIG_CMD_DISPLAY
+
 #endif /* __CONFIG_BOSTON_RISCV_H */

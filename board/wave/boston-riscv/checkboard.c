@@ -57,6 +57,7 @@ int show_board_info(void)
 	else
 		model = "shogun";
 
+	lowlevel_display("U-boot  ");
 	printf("Model: %s\n", model);
 
 	return checkboard();
