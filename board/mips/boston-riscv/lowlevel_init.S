@@ -15,4 +15,6 @@ msg_ddr_ok:	.ascii "DDR OK  "
 	.globl lowlevel_display
 lowlevel_display:
 	li	t0, BOSTON_LCD_BASE
+	ld	t1, 0(a0)
+	sd	t1, 0(t0)
 	jr	ra

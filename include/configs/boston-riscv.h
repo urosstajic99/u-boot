@@ -26,4 +26,9 @@
  */
 #define CONFIG_PHY_REALTEK
 
+/*
+ * LCD Display
+ */
+#define CONFIG_CMD_DISPLAY
+
 #endif /* __CONFIG_BOSTON_RISCV_H */
