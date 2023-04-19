@@ -86,7 +86,7 @@ _start:
 	li	a3, 0x8000000000000201
 
 	/* Test mhartid */
-	bne	a0, zero, setup_pmp
+	bne	a0, zero, ENDIAN_OK
 1:
 
 	/* Check mstatus bit 37 as the endianness */
@@ -140,6 +140,10 @@ SWITCH_ENDIAN:
 	j	1b
 ENDIAN_OK:
 
+	/* Test mhartid lowest 4 bits */
+	andi	t0, a0, 0xf
+	bne	t0, zero, setup_pmp
+
 	li	s0, CM_BASE
 	/* TEST KING-V */
 	bne	a2, a3, 1f
@@ -176,6 +180,9 @@ ENDIAN_OK:
 2:
 	INDEXED(sd, t0, t1, KINGV_GCR_C0_COH_EN, s0)
 3:
+
+	/* Test mhartid */
+	bne	a0, zero, setup_pmp
 
 	/* Map all PCIe DMA access to its default, non-IOCU, target */
 	li	t0,BOSTON_PLAT_NOCPCIE0ADDR
