@@ -178,6 +178,16 @@ ENDIAN_OK:
 	sd	t1, 0(t0)
 	j	3f
 2:
+	/* Get cluster number to update CM_BASE */
+	srl	t1, a0, MHARTID_CLUSTER_SHIFT
+	andi	t1, t1, MHARTID_CLUSTER_MASK
+	sll	t1, t1, CM_BASE_CLUSTER_SHIFT
+	add	s0, s0, t1
+	/* Get core number to update CM_BASE */
+	srl	t1, a0, MHARTID_CORE_SHIFT
+	andi	t1, t1, MHARTID_CORE_MASK
+	sll	t1, t1, CM_BASE_CORE_SHIFT
+	add	s0, s0, t1
 	INDEXED(sd, t0, t1, KINGV_GCR_C0_COH_EN, s0)
 3:
 
