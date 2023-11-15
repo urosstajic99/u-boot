@@ -168,7 +168,8 @@ ENDIAN_OK:
 
 	li	t0, CPC_BASE + ENABLE
 	INDEXED(sd, t0, t1, CPC_BASE_OFFSET, s0)
-
+	j	20f
+20:
 	/* Clear bit 28 at GIC_Base to enable counter */
 	li	t0, GIC_BASE
 	ld	t1, 0(t0)
