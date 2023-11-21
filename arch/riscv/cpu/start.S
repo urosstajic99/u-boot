@@ -148,13 +148,23 @@ ENDIAN_OK:
 	/* TEST KING-V */
 	bne	a2, a3, 1f
 	li	t0, 0x1fb80000
+	/* Get cluster number to update CM_BASE */
+	srl	t1, a0, MHARTID_CLUSTER_SHIFT
+	andi	t1, t1, MHARTID_CLUSTER_MASK
+	sll	t1, t1, CM_BASE_CLUSTER_SHIFT
+	add	s0, s0, t1
+	move	t1, s0
 	j	2f
 1:
 	li	t0, 0x1fbf8000
-2:
-
 	li	t1, CM_BASE
+2:
+	/* Test mhartid lowest 16 bits */
+	li	t2, 0xffff
+	and	t2, a0, t2
+	bne	t2, zero, cm_relocate_done
 	sd	t1, GCR_BASE_OFFSET(t0)
+cm_relocate_done:
 
 	li	t0, GCR_CL_COH_EN_EN
 
@@ -179,11 +189,6 @@ ENDIAN_OK:
 	sd	t1, 0(t0)
 	j	3f
 2:
-	/* Get cluster number to update CM_BASE */
-	srl	t1, a0, MHARTID_CLUSTER_SHIFT
-	andi	t1, t1, MHARTID_CLUSTER_MASK
-	sll	t1, t1, CM_BASE_CLUSTER_SHIFT
-	add	s0, s0, t1
 	/* Get core number to update CM_BASE */
 	srl	t1, a0, MHARTID_CORE_SHIFT
 	andi	t1, t1, MHARTID_CORE_MASK
