@@ -3,9 +3,9 @@
  * Copyright (C) 2021, Chao-ying Fu <cfu@wavecomp.com>
  */
 
-#include <common.h>
 #include <cpu_func.h>
 #include <asm/arch-shogun/shogun.h>
+#include <asm/global_data.h>
 
 #if 0
 void icache_enable(void)

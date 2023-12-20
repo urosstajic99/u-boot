@@ -132,7 +132,7 @@ static int pcie_xilinx_write_config(struct udevice *bus, pci_dev_t bdf,
 				    uint offset, ulong value,
 				    enum pci_size_t size)
 {
-	if (bdf == PCI_BDF(bus->seq, 0, 0)) {
+	if (bdf == PCI_BDF(bus->seq_, 0, 0)) {
 		switch (offset) {
 		case PCI_MEMORY_BASE:
 		case PCI_MEMORY_LIMIT:
@@ -205,7 +205,7 @@ static int pcie_xilinx_probe(struct udevice *dev)
 
         /* Enable the bridge */
         rpsc = readl(pcie->cfg_base + XILINX_PCIE_REG_RPSC);
-        rpsc |= XILINX_PCIE_REG_RPSC_BRIDGEEN;
+        rpsc |= XILINX_PCIE_REG_RPSC_BEN;
         writel(rpsc, pcie->cfg_base + XILINX_PCIE_REG_RPSC);
 
         /* Discover the size of the ECAM region */

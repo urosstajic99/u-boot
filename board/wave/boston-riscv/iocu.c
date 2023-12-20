@@ -4,12 +4,12 @@
  * SPDX-License-Identifier:	GPL-2.0
  */
 
-#include <common.h>
 #include <dm.h>
 #include <env_callback.h>
 #include <asm/io.h>
 #include <asm/arch-shogun/cm.h>
 #include "boston-regs.h"
+#include <event.h>
 
 static const struct mmio_region mmio_regions[] = {
 	{ 0x10000000, 0x160f0000, .enable = 1 },
@@ -109,7 +109,9 @@ static int on_io_coherent(const char *name, const char *value,
 }
 U_BOOT_ENV_CALLBACK(io_coherent, on_io_coherent);
 
-int misc_init_f(void)
+static int p8700_misc_init_f(void)
 {
 	return set_io_coherent(env_get_yesno("io.coherent") != 0);
 }
+
+EVENT_SPY_SIMPLE(EVT_MISC_INIT_F, p8700_misc_init_f);

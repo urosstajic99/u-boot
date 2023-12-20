@@ -19,7 +19,7 @@
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-		timebase-frequency = <20000000>;
+		timebase-frequency = <25000000>;
 
 		cpu@0 {
 			device_type = "cpu";
@@ -29,7 +29,7 @@
 			status = "okay";
 			reg = <0>;
 			clocks = <&clk_boston BOSTON_CLK_CPU>;
-			clock-frequency = <20000000>;
+			clock-frequency = <25000000>;
 			u-boot,dm-pre-reloc;
 		};
 	};
@@ -115,7 +115,7 @@
 	};
 
 	pci2: pci@14000000 {
-		status = "disabled";
+		#status = "disabled";
 		compatible = "xlnx,axi-pcie-host-1.00.a";
 		device_type = "pci";
 		reg = <0x14000000 0x2000000>;
@@ -230,7 +230,7 @@
 		interrupts = <GIC_SHARED 3 IRQ_TYPE_LEVEL_HIGH>;
 
 		clocks = <&clk_boston BOSTON_CLK_SYS>;
-		clock-frequency = <20000000>;
+		clock-frequency = <25000000>;
 
 		u-boot,dm-pre-reloc;
 	};

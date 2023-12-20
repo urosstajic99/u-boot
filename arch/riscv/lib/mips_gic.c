@@ -5,7 +5,6 @@
  * U-Boot syscon driver for MIPS GIC.
  */
 
-#include <common.h>
 #include <dm.h>
 #include <regmap.h>
 #include <syscon.h>
@@ -60,7 +59,7 @@ int riscv_get_ipi(int hart, int *pending)
 }
 
 static const struct udevice_id mips_gic_ids[] = {
-	{ .compatible = "mips,gic0", .data = RISCV_SYSCON_PLIC },
+	{ .compatible = "mips,gic0", .data = RISCV_SYSCON_PLICSW },
 	{ }
 };
 

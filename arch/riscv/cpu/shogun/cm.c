@@ -6,7 +6,6 @@
  * SPDX-License-Identifier:	GPL-2.0+
  */
 
-#include <common.h>
 #include <asm/io.h>
 #include <asm/arch-shogun/cm.h>
 #include <asm/arch-shogun/shogun.h>

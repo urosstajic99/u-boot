@@ -5,8 +5,8 @@
  * SPDX-License-Identifier:	GPL-2.0+
  */
 
-#include <common.h>
 #include <command.h>
+#include <string.h>
 #if 0
 #include <asm/byteorder.h>
 #include <asm/cache.h>

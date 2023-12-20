@@ -18,8 +18,15 @@
 #include <timer.h>
 #include <asm/csr.h>
 
+#define P8700_TIMER_ADDR 0x16108050
+
 static u64 notrace riscv_timer_get_count(struct udevice *dev)
 {
+	if (IS_ENABLED(CONFIG_P8700_RISCV)) {
+		u32 *mtime_addr = (u32 *)P8700_TIMER_ADDR;
+		return *mtime_addr;
+	}
+	
 	__maybe_unused u32 hi, lo;
 
 	if (IS_ENABLED(CONFIG_64BIT))

@@ -3,7 +3,6 @@
  * Copyright (C) 2016 Imagination Technologies
  */
 
-#include <common.h>
 #include <init.h>
 
 #include <asm/io.h>
@@ -44,21 +43,4 @@ int checkboard(void)
 	}
 
 	return 0;
-}
-
-int show_board_info(void)
-{
-	long marchid;
-	char *model = NULL;
-
-	asm volatile("csrr %0, marchid":"=r"(marchid));
-	if (marchid == KINGV_MARCHID)
-		model = "king-v";
-	else
-		model = "shogun";
-
-	lowlevel_display("U-boot  ");
-	printf("Model: %s\n", model);
-
-	return checkboard();
 }

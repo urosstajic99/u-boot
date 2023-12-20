@@ -4,12 +4,12 @@
  * SPDX-License-Identifier:	GPL-2.0
  */
 
-#include <common.h>
 #include <led-display.h>
 
 #include <asm/io.h>
 
 #include "boston-lcd.h"
+#include <string.h>
 
 static char buf[8];
 static int pos;

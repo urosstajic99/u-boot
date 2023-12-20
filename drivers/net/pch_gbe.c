@@ -16,6 +16,7 @@
 #include <linux/delay.h>
 #include <asm/gpio.h>
 #include "pch_gbe.h"
+#include <env.h>
 
 #if !defined(CONFIG_PHYLIB)
 # error "PCH Gigabit Ethernet driver requires PHYLIB - missing CONFIG_PHYLIB"

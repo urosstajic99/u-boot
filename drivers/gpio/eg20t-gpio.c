@@ -4,7 +4,6 @@
  * SPDX-License-Identifier:	GPL-2.0
  */
 
-#include <common.h>
 #include <dm.h>
 #include <errno.h>
 #include <pci.h>
@@ -105,9 +104,10 @@ static const struct dm_gpio_ops eg20t_gpio_ops = {
 static int eg20t_gpio_probe(struct udevice *dev)
 {
 	struct eg20t_gpio_priv *priv = dev_get_priv(dev);
-	struct gpio_dev_priv *uc_priv = dev->uclass_priv;
+	struct gpio_dev_priv *uc_priv = dev->uclass_priv_;
 
-	priv->base = dm_pci_map_bar(dev, PCI_BASE_ADDRESS_1, PCI_REGION_MEM);
+	priv->base = dm_pci_map_bar(dev, PCI_BASE_ADDRESS_1,
+								0, 0, PCI_REGION_TYPE, PCI_REGION_MEM);
 	if (!priv->base) {
 		debug("failed to map GPIO registers\n");
 		return -EINVAL;
@@ -128,7 +128,7 @@ U_BOOT_DRIVER(eg20t_gpio) = {
 	.id	= UCLASS_GPIO,
 	.of_match = eg20t_gpio_ids,
 	.probe	= eg20t_gpio_probe,
-	.priv_auto_alloc_size = sizeof(struct eg20t_gpio_priv),
+	.priv_auto = sizeof(struct eg20t_gpio_priv),
 	.ops	= &eg20t_gpio_ops,
 };
 

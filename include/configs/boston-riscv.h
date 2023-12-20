@@ -20,8 +20,6 @@
 
 #define CONFIG_STANDALONE_LOAD_ADDR	0x80200000
 
-#define CONFIG_TFTP_FILE_NAME_MAX_LEN	256
-
 /*
  * Flash
  */
@@ -33,14 +31,6 @@
  * Ethernet
  */
 #define CONFIG_PHY_REALTEK
-
-#define CONFIG_ENV_CALLBACK_LIST_STATIC \
-	"io" ENV_DOT_ESCAPE ".coherent:io_coherent,"
-
-/*
- * Miscellaneous
- */
-#define CONFIG_MISC_INIT_F
 
 /*
  * LCD Display
