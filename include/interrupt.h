@@ -43,3 +43,22 @@ struct resume_data {
  * Return:	0 before an exception, 1 after an exception occurred
  */
 void set_resume(struct resume_data *data);
+
+ulong atomic_swap_w(ulong val, ulong addr);
+ulong atomic_swap_d(ulong val, ulong addr);
+ulong atomic_add_w(ulong val, ulong addr);
+ulong atomic_add_d(ulong val, ulong addr);
+ulong atomic_and_w(ulong val, ulong addr);
+ulong atomic_and_d(ulong val, ulong addr);
+ulong atomic_or_w(ulong val, ulong addr);
+ulong atomic_or_d(ulong val, ulong addr);
+ulong atomic_xor_w(ulong val, ulong addr);
+ulong atomic_xor_d(ulong val, ulong addr);
+ulong atomic_max_w(ulong val, ulong addr);
+ulong atomic_max_d(ulong val, ulong addr);
+ulong atomic_maxu_w(ulong val, ulong addr);
+ulong atomic_maxu_d(ulong val, ulong addr);
+ulong atomic_min_w(ulong val, ulong addr);
+ulong atomic_min_d(ulong val, ulong addr);
+ulong atomic_minu_w(ulong val, ulong addr);
+ulong atomic_minu_d(ulong val, ulong addr);
