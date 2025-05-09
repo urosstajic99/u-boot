@@ -2321,6 +2321,12 @@ config CMD_DISPLAY
 	  displayed on a simple board-specific display. Implement
 	  display_putc() to use it.
 
+config CMD_START_HARTS
+	bool "Start harts"
+	depends on RISCV
+	help
+	  This prints commands to start all harts and go 0x80000000.
+
 config CMD_EFIDEBUG
 	bool "efidebug - display/configure UEFI environment"
 	depends on EFI_LOADER

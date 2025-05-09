@@ -12,3 +12,4 @@ F:  arch/riscv/lib/mips_gic.c
 F:  cmd/display.c
 F:  include/led-display.h
 F:  doc/README.LED_display
+F:  cmd/start_harts.c
