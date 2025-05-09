@@ -51,6 +51,9 @@ static void probe_cache_config(void)
 
 void flush_dcache_range(unsigned long start, unsigned long end)
 {
+	if (p8700_dma_is_coherent())
+		return;
+
 	if (lsize == 0)
 		probe_cache_config();
 
@@ -74,6 +77,9 @@ void flush_dcache_range(unsigned long start, unsigned long end)
 
 void invalidate_dcache_range(unsigned long start, unsigned long end)
 {
+	if (p8700_dma_is_coherent())
+		return;
+
 	if (lsize == 0)
 		probe_cache_config();
 
