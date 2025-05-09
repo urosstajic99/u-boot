@@ -6,3 +6,5 @@ obj-y += dram.o
 obj-y += cpu.o
 obj-y += cache.o
 obj-y += emu-amo.o
+obj-y += cm.o
+obj-y += cm-iocu.o
