@@ -36,6 +36,11 @@ static void probe_cache_config(void)
 
 void flush_dcache_range(unsigned long start, unsigned long end)
 {
+	DECLARE_GLOBAL_DATA_PTR;
+
+	if (gd->flags & GD_FLG_COHERENT_DMA)
+		return;
+
 	if (lsize == 0)
 		probe_cache_config();
 
@@ -55,6 +60,11 @@ void flush_dcache_range(unsigned long start, unsigned long end)
 
 void invalidate_dcache_range(unsigned long start, unsigned long end)
 {
+	DECLARE_GLOBAL_DATA_PTR;
+
+	if (gd->flags & GD_FLG_COHERENT_DMA)
+		return;
+
 	if (lsize == 0)
 		probe_cache_config();
 
