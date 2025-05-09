@@ -44,6 +44,10 @@ struct arch_global_data {
 	ulong smbios_start;		/* Start address of SMBIOS table */
 #endif
 	struct resume_data *resume;
+#if CONFIG_IS_ENABLED(P8700_RISCV)
+	int num_iocus;
+	int num_iocus_usable;
+#endif
 };
 
 #include <asm-generic/global_data.h>
