@@ -59,6 +59,7 @@ obj-$(CONFIG_CMD_SOUND) += sound.o
 ifdef CONFIG_POST
 obj-$(CONFIG_CMD_DIAG) += diag.o
 endif
+obj-$(CONFIG_CMD_START_HARTS) += start_harts.o
 obj-$(CONFIG_CMD_DISPLAY) += display.o
 obj-$(CONFIG_CMD_ADTIMG) += adtimg.o
 obj-$(CONFIG_CMD_ABOOTIMG) += abootimg.o

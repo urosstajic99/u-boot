@@ -77,7 +77,10 @@
 #define CPC_SYS_CONFIG		0x0140
 
 #define CPC_Cx_CMD		0x0000
+#define CPC_Cx_CMD_PWRUP	0x3
 #define CPC_Cx_CMD_RESET	0x4
+
+#define CPC_Cx_VP_RUN		0x0028
 
 /* GCR_CONFIG */
 #define GCR_CONFIG						0x0000
