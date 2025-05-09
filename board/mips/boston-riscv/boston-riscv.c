@@ -46,3 +46,14 @@ void setup_pcie_dma_map(void)
 	writel(0x00, (void __iomem *)BOSTON_PLAT_NOCPCIE1ADDR);
 	writel(0x00, (void __iomem *)BOSTON_PLAT_NOCPCIE2ADDR);
 }
+
+bool dma_is_coherent(void)
+{
+	u32 pcie0_off = readl((void __iomem *)BOSTON_PLAT_NOCPCIE0ADDR);
+	u32 pcie1_off = readl((void __iomem *)BOSTON_PLAT_NOCPCIE1ADDR);
+	u32 pcie2_off = readl((void __iomem *)BOSTON_PLAT_NOCPCIE2ADDR);
+
+	return pcie0_off == BOSTON_IOCU_NOC_OFFSET &&
+	       pcie1_off == BOSTON_IOCU_NOC_OFFSET &&
+	       pcie2_off == BOSTON_IOCU_NOC_OFFSET;
+}

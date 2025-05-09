@@ -10,3 +10,5 @@
 __weak void wait_ddr_calib(void) { }
 
 __weak void setup_pcie_dma_map(void) { }
+
+__weak bool dma_is_coherent(void) { return false; }
