@@ -44,6 +44,8 @@ struct arch_global_data {
 	ulong smbios_start;		/* Start address of SMBIOS table */
 #endif
 	struct resume_data *resume;
+	int num_iocus;
+	int num_iocus_usable;
 };
 
 #include <asm-generic/global_data.h>
