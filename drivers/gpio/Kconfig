@@ -731,3 +731,10 @@ config SPL_ADP5585_GPIO
 	  Support ADP5585 GPIO expander in SPL.
 
 endif
+
+config EG20T_GPIO
+        bool "Intel EG20T GPIO driver"
+        depends on DM_GPIO && DM_PCI
+        help
+          Enable this to support the GPIO controller found in the Intel EG20T
+          Platform Controller Hub.
