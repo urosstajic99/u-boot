@@ -719,4 +719,11 @@ config MPFS_GPIO
 	help
 		Enable to support the GPIO driver on Polarfire SoC
 
+config EG20T_GPIO
+        bool "Intel EG20T GPIO driver"
+        depends on DM_GPIO && PCI
+        help
+          Enable this to support the GPIO controller found in the Intel EG20T
+          Platform Controller Hub.
+
 endif
