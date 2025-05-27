@@ -496,7 +496,7 @@ $(obj)/%.efi: $(obj)/%_efi.so
 KBUILD_EFILDFLAGS = -nostdlib -zexecstack -znocombreloc -znorelro
 KBUILD_EFILDFLAGS += $(call ld-option,--no-warn-rwx-segments)
 quiet_cmd_efi_ld = LD      $@
-cmd_efi_ld = $(LD) $(KBUILD_EFILDFLAGS) -L $(srctree) -T $(EFI_LDS_PATH) \
+cmd_efi_ld = $(LD) $(KBUILD_EFILDFLAGS) $(ld_flags) -L $(srctree) -T $(EFI_LDS_PATH) \
 		-shared -Bsymbolic -s $^ $(PLATFORM_LIBGCC) -o $@
 
 EFI_LDS_PATH = arch/$(ARCH)/lib/$(EFI_LDS)
