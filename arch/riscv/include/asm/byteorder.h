@@ -26,7 +26,7 @@
 #  define __SWAB_64_THRU_32__
 #endif
 
-#ifdef __RISCVEB__
+#if defined(__RISCVEB__) || defined(__riscv_big_endian)
 #include <linux/byteorder/big_endian.h>
 #else
 #include <linux/byteorder/little_endian.h>

@@ -10,8 +10,15 @@
 # Rick Chen, Andes Technology Corporation <rick@andestech.com>
 #
 
+ifdef CONFIG_SYS_BIG_ENDIAN
+32bit-emul		:= elf32briscv
+64bit-emul		:= elf64briscv
+PLATFORM_CPPFLAGS	+= -EB
+KBUILD_LDFLAGS		+= -EB
+else
 32bit-emul		:= elf32lriscv
 64bit-emul		:= elf64lriscv
+endif
 
 ifdef CONFIG_32BIT
 KBUILD_LDFLAGS		+= -m $(32bit-emul)
