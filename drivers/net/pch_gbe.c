@@ -7,6 +7,7 @@
 
 #include <cpu_func.h>
 #include <dm.h>
+#include <env.h>
 #include <errno.h>
 #include <log.h>
 #include <malloc.h>
@@ -15,6 +16,7 @@
 #include <miiphy.h>
 #include <linux/delay.h>
 #include "pch_gbe.h"
+#include <asm-generic/gpio.h>
 
 #if !defined(CONFIG_PHYLIB)
 # error "PCH Gigabit Ethernet driver requires PHYLIB - missing CONFIG_PHYLIB"
@@ -32,6 +34,13 @@ static void pch_gbe_mac_read(struct pch_gbe_regs *mac_regs, u8 *addr)
 	macid_hi = readl(&mac_regs->mac_adr[0].high);
 	macid_lo = readl(&mac_regs->mac_adr[0].low) & 0xffff;
 	debug("pch_gbe: macid_hi %#x macid_lo %#x\n", macid_hi, macid_lo);
+
+	if (!macid_lo && !macid_hi) {
+		if (eth_env_get_enetaddr("ethaddr", addr))
+			return;
+
+		printf("No MAC found in either EG20T H/W or environment");
+	}
 
 	addr[0] = (u8)(macid_hi & 0xff);
 	addr[1] = (u8)((macid_hi >> 8) & 0xff);
@@ -73,6 +82,14 @@ static int pch_gbe_reset(struct udevice *dev)
 
 	priv->rx_idx = 0;
 	priv->tx_idx = 0;
+
+	if (dm_gpio_is_valid(&priv->gpio_phy_reset)) {
+		/* Reset the PHY */
+		dm_gpio_set_value(&priv->gpio_phy_reset, 1);
+		udelay(15000);
+		dm_gpio_set_value(&priv->gpio_phy_reset, 0);
+		udelay(5000);
+	}
 
 	writel(PCH_GBE_ALL_RST, &mac_regs->reset);
 
@@ -450,6 +467,11 @@ static int pch_gbe_probe(struct udevice *dev)
 	plat->iobase = (ulong)iobase;
 	priv->mac_regs = (struct pch_gbe_regs *)iobase;
 
+	err = gpio_request_by_name(dev, "phy-reset-gpios", 0,
+				   &priv->gpio_phy_reset, GPIOD_IS_OUT);
+	if (err && (err != -ENOENT))
+		return err;
+
 	/* Read MAC address from SROM and initialize dev->enetaddr with it */
 	pch_gbe_mac_read(priv->mac_regs, plat->enetaddr);
 
@@ -459,9 +481,17 @@ static int pch_gbe_probe(struct udevice *dev)
 
 	err = pch_gbe_reset(dev);
 	if (err)
-		return err;
+		goto out_err;
 
-	return pch_gbe_phy_init(dev);
+	err = pch_gbe_phy_init(dev);
+	if (err)
+		goto out_err;
+
+	return 0;
+out_err:
+	if (dm_gpio_is_valid(&priv->gpio_phy_reset))
+		dm_gpio_free(dev, &priv->gpio_phy_reset);
+	return err;
 }
 
 static int pch_gbe_remove(struct udevice *dev)
@@ -471,6 +501,9 @@ static int pch_gbe_remove(struct udevice *dev)
 	free(priv->phydev);
 	mdio_unregister(priv->bus);
 	mdio_free(priv->bus);
+
+	if (dm_gpio_is_valid(&priv->gpio_phy_reset))
+		dm_gpio_free(dev, &priv->gpio_phy_reset);
 
 	return 0;
 }
