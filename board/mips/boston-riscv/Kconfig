@@ -40,4 +40,8 @@ config PHY_REALTEK
     bool
     default y
 
+config TFTP_FILE_NAME_MAX_LEN
+    int "Maximum length of TFTP file name"
+    default 256
+
 endif
