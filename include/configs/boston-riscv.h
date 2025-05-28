@@ -14,6 +14,8 @@
 
 #define CONFIG_STANDALONE_LOAD_ADDR	0x80200000
 
+#define CONFIG_TFTP_FILE_NAME_MAX_LEN	256
+
 /*
  * Flash
  */
