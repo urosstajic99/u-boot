@@ -70,6 +70,11 @@
 
 #define CPC_PWRUP_CTL		0x0030
 
+#define CPC_SYS_CONFIG		0x0140
+
+#define CPC_Cx_CMD		0x0000
+#define CPC_Cx_CMD_RESET	0x4
+
 #define P8700_GCR_C0_COH_EN	0x20f8
 #define P8700_GCR_C1_COH_EN	0x21f8
 #define P8700_GCR_C2_COH_EN	0x22f8
