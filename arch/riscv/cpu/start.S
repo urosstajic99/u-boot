@@ -39,6 +39,10 @@ secondary_harts_relocation_error:
 .section .text
 .globl _start
 _start:
+#ifdef CONFIG_P8700_RISCV
+	call p8700_platform_setup
+#endif
+
 #if CONFIG_IS_ENABLED(RISCV_MMODE)
 	csrr	a0, CSR_MHARTID
 #endif
@@ -415,6 +419,10 @@ call_board_init_r:
 	mv	a0, s3			/* gd_t */
 	mv	a1, s4			/* dest_addr */
 	mv	s0, zero		/* fp == NULL */
+
+#ifdef CONFIG_P8700_RISCV
+	call set_flash_uncached
+#endif
 
 /*
  * jump to it ...

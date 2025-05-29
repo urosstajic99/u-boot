@@ -5,3 +5,5 @@
 extra-y = start.o
 
 obj-y += cpu.o mtrap.o
+
+obj-$(CONFIG_P8700_RISCV) += p8700/mips_platform_setup.o

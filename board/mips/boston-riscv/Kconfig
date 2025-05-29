@@ -1,0 +1,23 @@
+if TARGET_MIPS_BOSTON
+
+config SYS_BOARD
+	default "boston-riscv"
+
+config SYS_VENDOR
+	default "mips"
+
+config SYS_CONFIG_NAME
+	default "boston-riscv"
+
+config SYS_CPU
+	default "p8700"
+
+config BOARD_SPECIFIC_OPTIONS
+    def_bool y
+    select P8700_RISCV
+    imply SYS_NS16550
+
+config SYS_CACHELINE_SIZE
+    default 64
+
+endif
