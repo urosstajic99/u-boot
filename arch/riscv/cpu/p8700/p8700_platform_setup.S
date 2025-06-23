@@ -50,10 +50,47 @@ p8700_platform_setup:
 	/* a0 has mhartid */
 	csrr	a0, CSR_MHARTID
 
+	/* Test mhartid */
+	bne	a0, zero, ENDIAN_OK
+1:
+
+	/* Check mstatus bit 37 as the endianness */
+	csrr	s2, mstatus
+	srli	s2, s2, 37
+	andi	s2, s2, 1
+	bne	s2, zero, DDR_INIT_DONE
+
 	li	t0, BOSTON_PLAT_DDR3STAT
 1:	lw	t1, 0(t0)
 	andi	t1, t1, BOSTON_PLAT_DDR3STAT_CALIB
 	beqz	t1, 1b
+
+DDR_INIT_DONE:
+#ifdef __riscv_big_endian
+	bne	s2, zero, ENDIAN_OK
+#else
+	beq	s2, zero, ENDIAN_OK
+
+#endif
+SWITCH_ENDIAN:
+	li	s0, CM_BASE
+	li	t0, 0x1fb80000
+	li	t1, CM_BASE
+	sd	t1, GCR_BASE_OFFSET(t0)
+
+	/* Write the new endianness */
+	li	s1, CPC_BASE
+	xori	t0, s2, 1
+	sd	t0, CPC_SYS_CONFIG(s1)
+	fence
+
+	/* Reset */
+	li	t0, CPC_Cx_CMD_RESET
+	INDEXED(sd, t0, t1, CPC_OFF_LOCAL + CPC_Cx_CMD, s1)
+	fence
+1:
+	j	1b
+ENDIAN_OK:
 
 	/* Test mhartid lowest 4 bits */
 	andi	t0, a0, 0xf
