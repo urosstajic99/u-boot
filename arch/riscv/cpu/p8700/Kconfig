@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: GPL-2.0+
+#
+# Copyright (C) 2021, Chao-ying Fu <cfu@mips.com>
+
+config P8700_RISCV
+	bool
+	select ARCH_EARLY_INIT_R
+	imply CPU
+	imply CPU_RISCV
+	imply RISCV_ACLINT if (RISCV_MMODE || SPL_RISCV_MMODE)
+	imply CMD_CPU
+	imply SPL_CPU_SUPPORT
+	imply SPL_OPENSBI
+	imply SPL_LOAD_FIT
+
+config RISCV_CM_BASE
+	hex "RISCV CM Base Address"
+	default 0x16100000
+	help
+	  The physical base address at which to map the Coherence Manager
+	  Global Configuration Registers (GCRs).
