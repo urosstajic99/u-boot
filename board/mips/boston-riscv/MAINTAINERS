@@ -1,0 +1,9 @@
+BOSTON-RISCV BOARD
+M:	Chao-ying Fu <cfu@mips.com>
+S:	Maintained
+F:	board/mips/boston-riscv/
+F:	include/configs/boston-riscv.h
+F:	arch/riscv/cpu/p8700/
+F:	arch/riscv/include/asm/arch-p8700/
+F:	configs/boston-p8700_defconfig
+F:	arch/riscv/dts/boston-p8700.dts
