@@ -5,6 +5,7 @@
 
 #include <dm.h>
 #include <env_callback.h>
+#include <event.h>
 #include <asm/io.h>
 #include <asm/arch-p8700/cm.h>
 #include "boston-regs.h"
@@ -98,7 +99,10 @@ static int on_io_coherent(const char *name, const char *value,
 
 U_BOOT_ENV_CALLBACK(io_coherent, on_io_coherent);
 
-int misc_init_f(void)
+static int p8700_misc_init_f(void)
 {
 	return set_io_coherent(env_get_yesno("io.coherent") != 0);
 }
+
+EVENT_SPY_SIMPLE(EVT_MISC_INIT_F, p8700_misc_init_f);
+
