@@ -8,7 +8,11 @@
 #include <dt-bindings/clock/boston-clock.h>
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/interrupt-controller/irq.h>
-#include <dt-bindings/interrupt-controller/mips-gic.h>
+
+#define IRQ_TYPE_LEVEL_HIGH 4
+#define UART_INT 4
+#define PCIE2_INT 7
+#define APLIC_S_BASE 0x16160000
 
 / {
 	#address-cells = <1>;
@@ -60,13 +64,6 @@
 		interrupts-extended = <&cpu0_intc 7>;
 	};
 
-	gic: interrupt-controller {
-		compatible = "mti,gic";
-
-		interrupt-controller;
-		#interrupt-cells = <3>;
-	};
-
 	pci0: pci@10000000 {
 		device_type = "pci";
 		compatible = "xlnx,axi-pcie-host-1.00.a";
@@ -76,8 +73,8 @@
 		#size-cells = <2>;
 		#interrupt-cells = <1>;
 
-		interrupt-parent = <&gic>;
-		interrupts = <GIC_SHARED 2 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-parent = <&aplic_s0>;
+		interrupts = <PCIE2_INT IRQ_TYPE_LEVEL_HIGH>;
 
 		ranges = <0x02000000 0 0x40000000
 			  0x40000000 0 0x40000000>;
@@ -108,8 +105,8 @@
 		#size-cells = <2>;
 		#interrupt-cells = <1>;
 
-		interrupt-parent = <&gic>;
-		interrupts = <GIC_SHARED 1 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-parent = <&aplic_s0>;
+		interrupts = <PCIE2_INT IRQ_TYPE_LEVEL_HIGH>;
 
 		ranges = <0x02000000 0 0x20000000
 			  0x20000000 0 0x20000000>;
@@ -140,8 +137,8 @@
 		#size-cells = <2>;
 		#interrupt-cells = <1>;
 
-		interrupt-parent = <&gic>;
-		interrupts = <GIC_SHARED 0 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-parent = <&aplic_s0>;
+		interrupts = <PCIE2_INT IRQ_TYPE_LEVEL_HIGH>;
 
 		ranges = <0x02000000 0 0x16000000
 			  0x16000000 0 0x100000>;
@@ -242,8 +239,8 @@
 		reg-shift = <2>;
 		reg-io-width = <4>;
 
-		interrupt-parent = <&gic>;
-		interrupts = <GIC_SHARED 3 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-parent = <&aplic_s0>;
+		interrupts = <UART_INT IRQ_TYPE_LEVEL_HIGH>;
 
 		clocks = <&clk_boston BOSTON_CLK_SYS>;
 		clock-frequency = <25000000>;
@@ -260,5 +257,21 @@
 		compatible = "cfi-flash";
 		reg = <0x18000000 0x8000000>;
 		bank-width = <2>;
+	};
+
+	soc {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "simple-bus";
+		ranges;
+		
+		aplic_s0: interrupt-controller@16160000 {
+			#interrupt-cells = <0x00000002>;
+			compatible = "riscv,aplic";
+			interrupt-controller;
+			interrupts-extended = <&cpu0_intc 9>;
+			reg = <APLIC_S_BASE 0x00008000>;
+			riscv,num-sources = <0x00000035>;
+		};
 	};
 };
