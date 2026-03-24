@@ -20,7 +20,7 @@ __weak const struct mmio_region *get_mmio_regions(void)
 
 static void p8700_setup_mmio_limits(void)
 {
-	void __iomem *gcrs = mips_cm_base();
+	void __iomem *gcrs = (void __iomem *)(uintptr_t)p8700_cm_base();
 	const struct mmio_region *rgn = get_mmio_regions();
 	unsigned int num_clusters = mips_cm_num_clusters();
 	unsigned int limit = MIPS_CM_MMIO_LIMIT / num_clusters;

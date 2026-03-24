@@ -7,6 +7,7 @@
 #include <asm/global_data.h>
 #include <asm/io.h>
 #include <asm/arch-p8700/p8700.h>
+#include <asm/arch-p8700/p8700_platform.h>
 
 #define MCACHE_BASE_INST 0xec0500f3
 
@@ -40,7 +41,9 @@ static void probe_cache_config(void)
 
 	int l2_config = 0;
 
-	l2_config = readl((void __iomem *)GCR_L2_CONFIG);
+	void __iomem *cm = (void __iomem *)(ulong)p8700_cm_base();
+
+	l2_config = readl(cm + GCR_L2_CONFIG_OFFSET);
 	int l2_line_size_info = (l2_config >> L2_LINE_SIZE_SHIFT)
 				& L2_LINE_SIZE_MASK;
 	slsize = (l2_line_size_info == 0) ? 0 : 1 << (l2_line_size_info + 1);

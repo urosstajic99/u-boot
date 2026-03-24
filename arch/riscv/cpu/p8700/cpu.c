@@ -7,6 +7,7 @@
 #include <asm/io.h>
 #include <linux/types.h>
 #include <asm/arch-p8700/p8700.h>
+#include <asm/arch-p8700/p8700_platform.h>
 
 static __noreturn void jump_to_addr(ulong addr)
 {
@@ -22,18 +23,15 @@ void harts_early_init(void)
 	ulong hartid = csr_read(CSR_MHARTID);
 
 	/* Wait for DDR3 calibration */
-	while (!(readl((void __iomem *)BOSTON_PLAT_DDR3STAT) &
-		 BOSTON_PLAT_DDR3STAT_CALIB)) {
-		/* busy-wait */
-	}
+	p8700_wait_ddr_calib();
 
 	/*
 	 * Only mhartid[3:0] == 0 performs CM/GCR programming.
 	 * Other harts skip CM/GCR setup and go straight to PMP/PMA setup.
 	 */
 	if ((hartid & 0xFULL) == 0) {
-		ulong cm_base = CM_BASE;
-		void __iomem *gcr_win = (void __iomem *)0x1fb80000;
+		ulong cm_base = (ulong)p8700_cm_base();
+		void __iomem *gcr_win = p8700_gcr_win();
 		ulong cluster = (hartid >> MHARTID_CLUSTER_SHIFT) &
 				MHARTID_CLUSTER_MASK;
 
@@ -53,11 +51,8 @@ void harts_early_init(void)
 		 * On hart 0, default PCIe DMA mapping should be the non-IOCU
 		 * target.
 		 */
-		if (hartid == 0) {
-			writel(0x00, (void __iomem *)BOSTON_PLAT_NOCPCIE0ADDR);
-			writel(0x00, (void __iomem *)BOSTON_PLAT_NOCPCIE1ADDR);
-			writel(0x00, (void __iomem *)BOSTON_PLAT_NOCPCIE2ADDR);
-		}
+		if (hartid == 0)
+			p8700_setup_pcie_dma_map();
 	}
 
 	/* PMP setup */

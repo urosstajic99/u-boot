@@ -27,13 +27,10 @@
 #define CM_BASE_CORE_SHIFT	8
 #define CM_BASE_CLUSTER_SHIFT	19
 
-#define P8700_TIMER_ADDR	0x16108050
-
 #define CCA_CACHE_ENABLE	0
 #define CCA_BUFFER_CACHE	1
 #define CCA_CACHE_DISABLE	2
 #define CCA_UNCACHE_ACC		3
-#define PMA_SPECULATION		(0x1 << 3)
 
 #define L1_I_CACHE      0
 #define L1_D_CACHE      1
@@ -51,7 +48,7 @@
 #define L1D_LINE_SIZE_SHIFT	10
 #define L1D_LINE_SIZE_MASK	0x7
 
-#define GCR_L2_CONFIG	0x16100130
+#define GCR_L2_CONFIG_OFFSET	0x0130
 #define L2_LINE_SIZE_SHIFT	8
 #define L2_LINE_SIZE_MASK	0xf
 
@@ -61,13 +58,6 @@
 #define PMP_TOR			0x8
 #define PMP_NA4			0x10
 #define PMP_NAPOT		0x18
-
-#define CM_BASE			0x16100000
-#define CPC_BASE		(CM_BASE + 0x8000)
-
-/* Block offsets */
-#define GCR_OFF_GLOBAL		0x0000
-#define GCR_OFF_LOCAL		0x2000
 
 /* CPC Block offsets */
 #define CPC_OFF_LOCAL		0x2000
@@ -118,28 +108,5 @@
 #define GCR_BASE_OFFSET		0x0008
 #define GIC_BASE_OFFSET		0x0080
 #define CPC_BASE_OFFSET		0x0088
-#define ENABLE			0x1
-#define COUNT_STOP		(0x1 << 28)
-#define GIC_LOCAL_SECTION_OFS	0x8000
-#define GIC_VL_MASK		0x08
-#define GIC_VL_RMASK		0x0c
-#define GIC_VL_SMASK		0x10
-#define GIC_VL_COMPARE_MAP	0x44
-
-#define INDEXED(op, reg, idx, offset, base) \
-	li	idx, offset	;\
-	add	idx, idx, base	;\
-	op	reg, (idx)
-
-#define BOSTON_PLAT_BASE	0x17ffd000
-#define BOSTON_PLAT_DDR3STAT	(BOSTON_PLAT_BASE + 0x14)
-#define BOSTON_PLAT_DDR3STAT_CALIB	(0x1 << 2)
-#define BOSTON_PLAT_NOCPCIE0ADDR        (BOSTON_PLAT_BASE + 0x3c)
-#define BOSTON_PLAT_NOCPCIE1ADDR        (BOSTON_PLAT_BASE + 0x40)
-#define BOSTON_PLAT_NOCPCIE2ADDR        (BOSTON_PLAT_BASE + 0x44)
-
-#ifndef __ASSEMBLY__
-bool p8700_dma_is_coherent(void);
-#endif /* __ASSEMBLY__ */
 
 #endif /* __P8700_H__ */

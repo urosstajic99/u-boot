@@ -7,6 +7,7 @@
 #include <asm/io.h>
 #include <asm/global_data.h>
 #include <asm/arch-p8700/cm.h>
+#include <asm/arch-p8700/p8700_platform.h>
 
 __weak bool plat_iocu_usable(unsigned int cluster, unsigned int iocu)
 {
@@ -22,7 +23,7 @@ static int init_cluster_iocus(unsigned int cluster)
 
 	local_cluster = mips_cluster_id();
 
-	global_gcrs = mips_cm_base();
+	global_gcrs = (void __iomem *)(uintptr_t)p8700_cm_base();
 	if (cluster != local_cluster) {
 		// FIXME
 		return 1;

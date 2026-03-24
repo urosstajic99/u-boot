@@ -9,7 +9,7 @@
 
 #define BOSTON_IOCU_NOC_OFFSET	0x10
 
-bool p8700_dma_is_coherent(void)
+/*bool p8700_dma_is_coherent(void)
 {
 	u32 pcie0_off = readl((void __iomem *)BOSTON_PLAT_NOCPCIE0ADDR);
 	u32 pcie1_off = readl((void __iomem *)BOSTON_PLAT_NOCPCIE1ADDR);
@@ -18,4 +18,4 @@ bool p8700_dma_is_coherent(void)
 	return pcie0_off == BOSTON_IOCU_NOC_OFFSET &&
 	       pcie1_off == BOSTON_IOCU_NOC_OFFSET &&
 	       pcie2_off == BOSTON_IOCU_NOC_OFFSET;
-}
+}*/

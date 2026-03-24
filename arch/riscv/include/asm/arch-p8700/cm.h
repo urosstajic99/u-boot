@@ -7,6 +7,7 @@
 #define __P8700_CM_H__
 
 #include <asm/arch-p8700/p8700.h>
+#include <asm/arch-p8700/p8700_platform.h>
 
 struct mmio_region {
 	phys_addr_t addr_low;
@@ -26,21 +27,11 @@ int power_up_cluster(unsigned int cluster);
 int power_down_cluster(unsigned int cluster);
 int init_cluster_l2(unsigned int cluster);
 
-static inline void *mips_cm_base(void)
-{
-	return (void *)CM_BASE;
-}
-
-static inline void *mips_cpc_base(void)
-{
-	return (void *)CPC_BASE;
-}
-
 static inline unsigned int mips_cm_num_clusters(void)
 {
 	u32 cfg;
 
-	cfg = __raw_readl(mips_cm_base() + GCR_CONFIG);
+	cfg = __raw_readl(p8700_cm_base() + GCR_CONFIG);
 	cfg >>= GCR_CONFIG_NUMCLUSTERS_SHIFT;
 	cfg &= GCR_CONFIG_NUMCLUSTERS_MASK;
 
